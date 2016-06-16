@@ -1,0 +1,419 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript {
+    <style>
+        .checkout-float-button {
+            background-color: rgba(0,0,0,0.6);
+            width: 100%;
+            height: 100px;
+            position: fixed;
+            bottom: 0px;
+        }
+        .checkout-float-button #checkout{
+            margin-top:30px;
+        }
+    </style>
+    <div class="checkout-float-button">
+        <div class="container"><a id="checkout" class="btn btn-u btn-u-lg pull-right" disabled="disabled">去购物车结算</a></div>
+    </div>
+
+    @*fileupload*@
+    <link href="/assets/js/plugins/fileupload/jquery.fileupload.css" rel="stylesheet" />
+    <script src="/assets/js/plugins/fileupload/jquery.ui.widget.js"></script>
+    <script src="/assets/js/plugins/fileupload/jquery.iframe-transport.js"></script>
+    <script src="/assets/js/plugins/fileupload/jquery.fileupload.js"></script>
+    <script src="/assets/js/plugins/fileupload/jquery.fileupload-process.js"></script>
+    <script src="/assets/js/plugins/fileupload/jquery.fileupload-validate.js"></script>
+    <script>
+        $(function () {
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                autoUpload: true,
+                singleFileUploads: true,
+                acceptFileTypes: /(\.|\/)(stl)$/i,
+                maxFileSize: 100000000, //10000000  10MB
+                add: function (e, data) {
+                    //$('body').append('<p class="upl">Uploading...</p>')
+                    //data.submit();
+                    $("#progress").show();
+                    data.submit();
+                },
+                added: function (e, data) {
+                    //alert("ririri");
+                },
+                success: function (data) {
+                    //data.files
+                    //alert("Success!");
+                },
+                error: function (e, data) {
+                    $('#progress').hide(function () {
+                        $('#progress .progress-bar').css('width', '0%');
+                    });
+                    alert("发生错误了");
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#progress .progress-bar').css(
+                        'width',
+                        progress + '%'
+                    );
+                }
+            }).on('fileuploadprocessalways', function (e, data) {
+                alert("hhhh");
+                var currentFile = data.files[data.index];
+                if (data.files.error && currentFile.error) {
+                    // there was an error, do something about it
+                    console.log(currentFile.error);
+                }
+            }).on('fileuploaddone', function (e, data) {
+                $('#progress').hide(function () {
+                    $('#progress .progress-bar').css('width', '0%');
+                });
+
+                var file = data.result.files[0];
+                if (file.error) {
+                    alert(file.error);
+                    $('#btntxt').html("重新上传stl文件");
+                    return;
+                }
+
+                $(".filename").html(file.name.split("$").slice(-1));
+                $("#filename").html(file.name);
+                $("#filesize").html(file.length + " * " + file.width + " * " + file.height + "  mm");
+                $("#filearea").html(file.surface + "  mm²");
+
+                $(".add-car").removeAttr("disabled");
+                
+            });
+        });
+    </script>
+
+    @*stl_loader*@   
+    <script src="~/assets/js/plugins/loader_stl/three.min.js"></script>
+    <script src="~/assets/js/plugins/loader_stl/STLLoader.js"></script>
+    <script src="~/assets/js/plugins/loader_stl/Detector.js"></script>
+    <script src="~/assets/js/plugins/loader_stl/Stats.js"></script>   
+
+
+    <script>
+        if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+        var container, stats;
+
+        var camera, scene, renderer, objects;
+
+        init();
+        animate();
+
+        function init() {
+
+            //container = document.createElement('div');
+            //document.body.appendChild(container);
+
+            container = document.getElementById("stl");
+
+            //camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+            camera = new THREE.PerspectiveCamera(35, 500 / 300, 1, 15);
+            camera.position.set(3, 0.5, 3);
+
+            scene = new THREE.Scene();
+
+            scene.fog = new THREE.Fog(0xffffff, 2, 15);
+            //scene.fog.color.setHSV(0.06, 0.2, 0.45);
+
+            // Grid
+
+            var size = 20, step = 0.25;
+
+            var geometry = new THREE.Geometry();
+            var material = new THREE.LineBasicMaterial({ color: 0x000000 });
+
+            for (var i = -size; i <= size; i += step) {
+
+                geometry.vertices.push(new THREE.Vector3(-size, -0.04, i));
+                geometry.vertices.push(new THREE.Vector3(size, -0.04, i));
+
+                geometry.vertices.push(new THREE.Vector3(i, -0.04, -size));
+                geometry.vertices.push(new THREE.Vector3(i, -0.04, size));
+
+            }
+
+            var line = new THREE.Line(geometry, material, THREE.LinePieces);
+            line.position.y = -0.46;
+            scene.add(line);
+
+            // Ground
+
+            var plane = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshPhongMaterial({ ambient: 0x999999, color: 0x999999, specular: 0x101010, perPixel: true }));
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.y = -0.5;
+            scene.add(plane);
+
+            plane.receiveShadow = true;
+
+            // Object
+           
+            //var loader = new THREE.STLLoader();
+            //loader.load('/Content/uploads/3d/demo.stl', function (geometry) {
+            //    alert("xxx");
+
+            //    var material = new THREE.MeshPhongMaterial({ ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200, perPixel: true });
+            //    var mesh = new THREE.Mesh(geometry, material);
+
+            //    mesh.castShadow = true;
+            //    mesh.receiveShadow = true;
+
+            //    scene.add(mesh);
+
+            //});
+
+            var loader = new THREE.STLLoader();
+            loader.addEventListener('load', function (event) {
+                //alert("hello");
+                var geometry = event.content;
+                var material = new THREE.MeshPhongMaterial({ ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200, perPixel: true });
+                var mesh = new THREE.Mesh(geometry, material);
+
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+
+                scene.add(mesh);
+
+            });
+            loader.load('/Content/uploads/3d/demo.stl');
+
+
+
+            // Lights
+
+            scene.add(new THREE.AmbientLight(0x777777));
+
+            addShadowedLight(1, 1, 1, 0xffffff, 1.35);
+            addShadowedLight(0.5, 1, -1, 0xffaa00, 1);
+
+            // renderer
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, clearColor: 0x111111, clearAlpha: 1, alpha: false });
+            //renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(500, 300);
+
+            renderer.setClearColor(scene.fog.color, 1);
+
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true;
+            renderer.physicallyBasedShading = true;
+
+            renderer.shadowMapEnabled = true;
+            renderer.shadowMapCullFrontFaces = false;
+
+            container.appendChild(renderer.domElement);
+
+            // stats
+
+            //stats = new Stats();
+            //stats.domElement.style.position = 'absolute';
+            //stats.domElement.style.top = '0px';
+            //container.appendChild(stats.domElement);
+
+            //
+
+            //window.addEventListener('resize', onWindowResize, false);
+
+        }
+
+        function addShadowedLight(x, y, z, color, intensity) {
+
+            var directionalLight = new THREE.DirectionalLight(color, intensity);
+            directionalLight.position.set(x, y, z)
+            scene.add(directionalLight);
+
+            directionalLight.castShadow = true;
+            //directionalLight.shadowCameraVisible = true;
+
+            var d = 1;
+            directionalLight.shadowCameraLeft = -d;
+            directionalLight.shadowCameraRight = d;
+            directionalLight.shadowCameraTop = d;
+            directionalLight.shadowCameraBottom = -d;
+
+            directionalLight.shadowCameraNear = 1;
+            directionalLight.shadowCameraFar = 4;
+
+            directionalLight.shadowMapWidth = 2048;
+            directionalLight.shadowMapHeight = 2048;
+
+            directionalLight.shadowBias = -0.005;
+            directionalLight.shadowDarkness = 0.15;
+
+        }
+
+        function onWindowResize() {
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+        }
+
+        //
+
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            render();
+            //stats.update();
+        }
+
+        function render() {
+
+            var timer = Date.now() * 0.0005;
+
+            camera.position.x = Math.cos(timer) * 5;
+            camera.position.z = Math.sin(timer) * 5;
+
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+
+        }
+
+    </script>
+
+    <script>
+        $(function () {
+            $(".add-car").click(function () {
+                $("#error").hide();
+                $("#errormessage").html("");
+
+                var parent = $(this).parents(".cartr");
+                var MaterialId = $(this).prev(".MaterialId").val();
+                var FileName = $("#filename").html();
+                var Size = $("#filesize").html();
+                var Area = $("#filearea").html();
+                var Num = parent.find(".num").val();
+                //alert(Num);
+                //return;
+                $.ajax({
+                    url: '/print/addcar',
+                    data: {
+                        MaterialId: MaterialId,
+                        Num: Num,
+                        Size: Size,
+                        Area: Area,
+                        FileName: FileName
+                    },
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //alert("成功！");
+                        $("#checkout").removeAttr("disabled").attr("href", "/account/checkcar");
+
+                        //刷新顶部购物车
+                        getcar();
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            //alert("失败了");
+                        }
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        $("#error").show();
+                        $("#errormessage").html(str);
+                    }
+                });
+
+            });
+        });
+
+        //$(function () {
+        //    $(".prev").click(function () {
+        //        var $num = $(this).next(".num");
+        //        if ($num.val().trim() == "1") return;
+        //        $num.val(parseInt($num.val()) - 1);
+        //    });
+        //    $(".next").click(function () {
+        //        var $num = $(this).prev(".num");
+        //        $num.val(parseInt($num.val()) + 1);
+        //    });
+        //});
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="headline"><h2 class="heading">文件规格</h2></div>
+        <ul class="list-unstyled" id="minfo">
+            <li>文件名称：   <span id="filename" style="display:none;"></span><span class="filename"></span> </li>
+            <li>材料体积：   <span id=""></span></li>
+            <li>文件尺寸：   <span id="filesize"></span></li>
+            <li>表面积：     <span id="filearea"></span></li>
+        </ul>
+        <div id="progress" class="progress" style="display:none;">
+            <div class="progress-bar progress-bar-success"></div>
+        </div>
+        <span class="btn-u btn-u-lg btn-block fileinput-button">
+            <i class="glyphicon glyphicon-plus"></i>
+            <span id="btntxt">上传STL格式的3D文件</span>
+            <input id="fileupload" type="file" name="file[file]" data-url="/print/upload" />
+        </span>
+
+    </div>
+    <div class="col-md-6 pull-right" style="padding:15px 10px 0px 0px;width:520px;height:320px;">
+        <div id="stl" style="width: 498px; height: 298px;background:#808080;border:1px solid #cacaca;">
+            
+        </div>       
+    </div>
+</div>
+
+<div class="row" style="padding:0px 15px 0px 10px;">
+    <div class="headline"><h2 class="heading">选择材料</h2></div>
+    
+    <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4>请认真填写信息!</h4>
+        <div id="errormessage"></div>
+    </div>
+
+    <table class="table text-center" id="mat">
+        <tr class="active">
+            <td class="col-md-3">材料</td>
+            <td>颜色</td>
+            <td>精度</td>
+            <td>预计交货时间</td>
+            <td>数量</td>
+            <td>密度(克/立方厘米)</td>
+            <td>单价</td>
+            <td>单次最低价格</td>
+            <td class="col-md-1"></td>
+        </tr>
+        @foreach (var item in Model.Materials) {
+            <tr class="cartr">
+                <td><a href="/material/@item.Id" target="_blank">@item.Name</a></td>
+                <td>@item.Color</td>
+                <td>@item.Accuracy</td>
+                <td>@item.Delivery</td>
+                <td>
+                    <div>
+                        <a class="prev">-</a>
+                        <input class="num" type="text" disabled="disabled" value="1">
+                        <a class="next">+</a>
+                    </div>
+                </td>
+                <td>@item.Density</td>
+                <td>￥@item.Price 元</td>
+                <td>￥@item.Price1 元</td>
+                <td><input type="hidden" class="MaterialId" value="@item.Id" /><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>
+            </tr>
+        }
+    </table>
+</div>
+
