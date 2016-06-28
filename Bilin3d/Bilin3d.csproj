@@ -914,6 +914,7 @@
     <Content Include="assets\js\plugins\fileupload\jquery.fileupload.js" />
     <Content Include="assets\js\plugins\fileupload\jquery.iframe-transport.js" />
     <Content Include="assets\js\plugins\fileupload\jquery.ui.widget.js" />
+    <Content Include="assets\js\plugins\jquery.twbsPagination.min.js" />
     <Content Include="assets\js\plugins\loader_stl\Detector.js" />
     <Content Include="assets\js\plugins\loader_stl\Stats.js" />
     <Content Include="assets\js\plugins\loader_stl\stats.min.js" />
