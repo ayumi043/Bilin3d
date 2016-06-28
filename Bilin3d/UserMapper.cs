@@ -30,11 +30,9 @@ namespace Bilin3d {
 
         public Guid? ValidateUser(string email, string password) {
             //var userRecord = DB.Select<UserModel>(q => q.Email == email && q.PassWord == EncodePassword(password)).FirstOrDefault();
-            var userRecord = DB.Select<UserModel>(q => q.Email == email && q.PassWord == password).FirstOrDefault();
-
-            if (userRecord == null) {
-                return null;
-            }
+            //var userRecord = DB.Select<UserModel>(q => q.Email == email && q.PassWord == password).FirstOrDefault();
+            var userRecord = DB.Single<UserModel>(q => q.Email == email && q.PassWord == password);
+            if (userRecord == null) return null;
 
             return userRecord.UserGuid;
         }

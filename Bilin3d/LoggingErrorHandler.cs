@@ -25,7 +25,7 @@ namespace Bilin3d {
             //}).Start();
 
             System.Threading.ThreadPool.QueueUserWorkItem((i) => {
-                _logger.Error("发生错误啦!", error);
+                _logger.Error("发生错误:"+error.Message +"\r\n" + error.StackTrace);
             }); 
         }
         

@@ -37,27 +37,27 @@ namespace Bilin3d.Modules {
                 string uploadDirectory;
                 string filepath = "";
                 if (Context.CurrentUser == null) {
-                     uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "temp");
-                     filepath = "/Content/uploads/temp/";
+                    uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "temp");
+                    filepath = "/Content/uploads/temp/";
                 } else {
-                     uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "3d");
-                     filepath = "/Content/uploads/3d/";
+                    uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "3d");
+                    filepath = "/Content/uploads/3d/";
                 }
-              
+
                 if (!Directory.Exists(uploadDirectory)) {
                     Directory.CreateDirectory(uploadDirectory);
                 }
 
-                string _filename ="";
-                string filename = "";                
+                string _filename = "";
+                string filename = "";
                 List<Models.File> files = new List<Models.File>();
-                
+
                 foreach (var file in Request.Files) {
                     if (System.IO.Path.GetExtension(file.Name).ToLower() != ".stl") {
                         //return Response.AsJson("{\"files\":[{error:\"文件格式不是stl\"}]}",Nancy.HttpStatusCode.BadRequest);
                         files.Add(new Models.File() { error = "文件格式不是stl!" });
-                        return Response.AsJson<JsonFileUpload>(new JsonFileUpload() {    
-                            files=files
+                        return Response.AsJson<JsonFileUpload>(new JsonFileUpload() {
+                            files = files
                         });
                     }
                     if (file.Name.IndexOf("$") >= 0) {
@@ -66,14 +66,14 @@ namespace Bilin3d.Modules {
                             files = files
                         });
                     }
-                                        
+
                     //_filename = file.Name;
                     if (Context.CurrentUser == null) {
-                         _filename = Session["TempUserId"].ToString() + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file.Name;
-                         filename = Path.Combine(uploadDirectory, _filename);
+                        _filename = Session["TempUserId"].ToString() + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file.Name;
+                        filename = Path.Combine(uploadDirectory, _filename);
                     } else {
                         string userid = "";
-                        userid = db.Select<string>(string.Format(@"select Id from T_User where Email='{0}'", base.Page.CurrentUser)).FirstOrDefault();
+                        userid = db.Select<string>(string.Format(@"select Id from T_User where Email=@email", new { email = base.Page.CurrentUser })).FirstOrDefault();
 
                         _filename = userid + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file.Name;
                         filename = Path.Combine(uploadDirectory, _filename);
@@ -84,7 +84,7 @@ namespace Bilin3d.Modules {
                     }
                 }
 
-               
+
                 STLReader stl = new STLReader(filename);
                 if (stl.IsValid) {
                     //jsonfile.files= stl.Size.Length.ToString();
@@ -93,14 +93,14 @@ namespace Bilin3d.Modules {
                     //stl.Surface.
                     files.Add(new Models.File() {
                         name = _filename,
-                        fullname = filepath+_filename,
+                        fullname = filepath + _filename,
                         length = stl.Size.Length.ToString(),
                         width = stl.Size.Width.ToString(),
                         height = stl.Size.Height.ToString(),
                         surface = stl.Surface.ToString(),
                         volume = stl.Volume.ToString()
-                    });                
-                } else {                  
+                    });
+                } else {
                     files.Add(new Models.File() {
                         error = stl.ErrorMessage
                     });
@@ -132,13 +132,11 @@ namespace Bilin3d.Modules {
 
                 if (base.Page.IsAuthenticated) {
                     //Mysql返回主表自增ID: SELECT LAST_INSERT_ID();
-//                    string sql = string.Format(@"        
-//                            SELECT Id FROM T_Car WHERE UserId IN(SELECT Id FROM T_User WHERE Email='{0}');
-//                            ", Page.CurrentUser);
-                    string sql = string.Format(@"        
-                            SELECT CarId FROM T_Car WHERE UserId ='{0}';
-                            ", Page.UserId);
-                    var carid = db.Select<string>(sql).FirstOrDefault();
+                    //                    string sql = string.Format(@"        
+                    //                            SELECT Id FROM T_Car WHERE UserId IN(SELECT Id FROM T_User WHERE Email='{0}');
+                    //                            ", Page.CurrentUser);
+                    string sql = "SELECT CarId FROM T_Car WHERE UserId =@UserId;";
+                    var carid = db.Select<string>(sql, new { UserId = Page.UserId }).FirstOrDefault();
                     if (carid == null) {  //购物车主表没记录
                         carid = Guid.NewGuid().ToString("N");
                         sql = string.Format(@"
@@ -169,7 +167,7 @@ namespace Bilin3d.Modules {
 		                            NOW()
 	                            );
                             
-                            ", base.Page.UserId,carid,model.FileName,model.Volume,model.Area,model.Size,model.Num,model.MaterialId);
+                            ", base.Page.UserId, carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
                     } else {
                         sql = string.Format(@"select 1 from T_CarDetail where MaterialId={0} and FileName='{1}'", model.MaterialId, model.FileName);
                         var materialid = db.Select<string>(sql).FirstOrDefault();
@@ -200,13 +198,13 @@ namespace Bilin3d.Modules {
                                     (SELECT Density*{2} FROM T_Material WHERE Id={6}),
 		                            NOW()
 	                            );                            
-                            ", carid, model.FileName,model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
+                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
                         } else {
                             sql = string.Format(@"update T_CarDetail set EditTime=NOW(), Num={0} where MaterialId={1} and FileName='{2}';", model.Num, model.MaterialId, model.FileName);
                         }
-                     
+
                     }
-                                        
+
                     //更新更新子表金额Amount字段，不足最低接单价格的按最低接单价格算
                     //更新主表总金额Amount字段
                     sql = sql + string.Format(@"
@@ -229,9 +227,7 @@ namespace Bilin3d.Modules {
                         ", carid);
                     var num = db.ExecuteNonQuery(sql);
                 } else {  // 未登陆
-                    string sql = string.Format(@"        
-                            SELECT CarId FROM T_CarTemp WHERE UserId='{0}';
-                            ", Session["TempUserId"].ToString());
+                    string sql = string.Format(@"SELECT CarId FROM T_CarTemp WHERE UserId='{0}';", Session["TempUserId"].ToString());
                     var carid = db.Select<string>(sql).FirstOrDefault();
                     if (carid == null) {  //临时购物车主表没记录
                         carid = Guid.NewGuid().ToString("N");
@@ -262,9 +258,9 @@ namespace Bilin3d.Modules {
                                     (SELECT Density*{3} FROM T_Material WHERE Id={7}),
 		                            NOW()
 	                            );                            
-                            ", Session["TempUserId"].ToString(),carid, model.FileName,model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
+                            ", Session["TempUserId"].ToString(), carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
                     } else {
-                        sql = string.Format(@"select 1 from T_CarDetailTemp where MaterialId={0} and FileName='{1}'",model.MaterialId,model.FileName);
+                        sql = string.Format(@"select 1 from T_CarDetailTemp where MaterialId={0} and FileName='{1}'", model.MaterialId, model.FileName);
                         var materialid = db.Select<string>(sql).FirstOrDefault();
                         if (materialid == null) {
                             sql = string.Format(@"
@@ -293,10 +289,10 @@ namespace Bilin3d.Modules {
                                     (SELECT Density*{2} FROM T_Material WHERE Id={6}),
 		                            NOW()
 	                            );                            
-                            ", carid, model.FileName,model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
+                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
                         } else {
                             sql = string.Format(@"update T_CarDetailTemp set Num={0},EditTime=NOW() where MaterialId={1} and FileName='{2}';", model.Num, model.MaterialId, model.FileName);
-                        }                        
+                        }
                     }
 
                     //更新更新子表金额Amount字段，不足最低接单价格的按最低接单价格算
@@ -319,18 +315,18 @@ namespace Bilin3d.Modules {
 
                         update T_CarTemp set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetailTemp where CarId='{0}') where CarId='{0}'
                         ", carid);
-                    var num = db.ExecuteNonQuery(sql);                   
+                    var num = db.ExecuteNonQuery(sql);
 
                     Session["CarAdded"] = "1"; // 表示已加入临时购物车了， 用于在登录/注册成功后，转换成正式用户购物车时判断（ConvertTempCar），避免一次数据库操作；
                 }
                 return null;
                 //return Response.AsJson(new { result = "success" });
             };
-           
+
             //获取顶部的购物车的商品
             Get["/print/car"] = parameters => {
                 if (base.Page.IsAuthenticated) {
-                    var cars = db.Select<CarModel>(string.Format(@"
+                    var cars = db.Select<CarModel>(@"
                         select t1.amount,
                             t1.CarId as CarId,
                             t2.Id as CarDetailId,
@@ -346,8 +342,8 @@ namespace Bilin3d.Modules {
                         from T_Car t1
                         left join T_CarDetail t2 on t2.CarId=t1.CarId
                         left join T_Material t3 on t3.Id=t2.MaterialId
-                        where t1.UserId=(SELECT Id FROM T_User WHERE Email='{0}');
-                        ", Page.CurrentUser));
+                        where t1.UserId=(SELECT Id FROM T_User WHERE Email=@Email);
+                        ", new { Email = Page.CurrentUser });
                     return Response.AsJson(cars.Select(i => new {
                         i.Accuracy,
                         i.Amount,
@@ -363,7 +359,7 @@ namespace Bilin3d.Modules {
                     }));
 
                 } else {
-                    var cars = db.Select<CarModel>(string.Format(@"
+                    var cars = db.Select<CarModel>(@"
                         select t1.amount,
                             t1.CarId as CarId,
                             t2.Id as CarDetailId,
@@ -379,8 +375,8 @@ namespace Bilin3d.Modules {
                         from T_CarTemp t1
                         left join T_CarDetailTemp t2 on t2.CarId=t1.CarId
                         left join T_Material t3 on t3.Id=t2.MaterialId
-                        where t1.UserId='{0}';
-                        ", Session["TempUserId"].ToString()));
+                        where t1.UserId=@UserId;
+                        ", new { UserId = Session["TempUserId"].ToString() });
                     return Response.AsJson(cars.Select(i => new {
                         i.Accuracy,
                         i.Amount,
@@ -394,7 +390,7 @@ namespace Bilin3d.Modules {
                         i.CarId,
                         FileName = i.FileName.Split('$').Last()
                     }));
-                }               
+                }
             };
 
             //删除购物车里的商品
@@ -404,38 +400,38 @@ namespace Bilin3d.Modules {
                 CarCount carcount;
                 if (Page.IsAuthenticated) {
                     // 第二条是删除子表没记录时的sql
-                    db.ExecuteNonQuery(string.Format(@"
-                        delete from T_CarDetail where id='{0}';
+                    db.ExecuteNonQuery(@"
+                        delete from T_CarDetail where id=@Id;
                         delete from T_Car where carid not in (select carid from T_CarDetail);
-                        update T_Car set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetail where CarId='{1}') where CarId='{1}';
-                        ", id,carid));
-                    carcount = db.Select<CarCount>(string.Format(@"                                             
+                        update T_Car set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetail where CarId=@CarId) where CarId=@CarId;
+                        ", new { Id = id, CarId = carid });
+                    carcount = db.Select<CarCount>(@"                                             
                         select sum(t2.amount) as SumAmount,
                             sum(t2.num) as SumNum
                         from T_Car t1
                         join T_CarDetail t2 on t2.CarId=t1.CarId
-                        where t1.UserId='{0}';
-                        ", Page.UserId)).FirstOrDefault();
+                        where t1.UserId=@UserId;
+                        ", new { UserId = Page.UserId }).FirstOrDefault();
                 } else {
                     // 第二条是删除子表没记录时的sql
-                    db.ExecuteNonQuery(string.Format(@"
-                        delete from T_CarDetailTemp where id='{0}';
+                    db.ExecuteNonQuery(@"
+                        delete from T_CarDetailTemp where id=@Id;
                         delete from T_Car where carid not in (select carid from T_CarDetail);
-                        update T_CarTemp set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetailTemp where CarId='{1}') where Id='{1}';
-                        ", id, carid));
-                    carcount = db.Select<CarCount>(string.Format(@"                                             
+                        update T_CarTemp set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetailTemp where CarId=@CarId) where CarId=@CarId;
+                        ", new { Id = id, CarId = carid });
+                    carcount = db.Select<CarCount>(@"                                             
                         select sum(t2.amount) as SumAmount,
                             sum(t2.num) as SumNum
                         from T_CarTemp t1
                         join T_CarDetailTemp t2 on t2.CarId=t1.CarId
-                        where t1.UserId='{0}';
-                        ", Session["TempUserId"].ToString())).FirstOrDefault();
+                        where t1.UserId=@UserId;
+                        ", new { UserId = Session["TempUserId"].ToString() }).FirstOrDefault();
                 }
                 //return Response.AsJson(new { result = "success: " + parameters.id + "!" });
                 return Response.AsJson(carcount);
             };
-            
-        }        
+
+        }
 
     }
 }

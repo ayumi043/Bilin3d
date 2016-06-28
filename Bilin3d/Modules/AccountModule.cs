@@ -482,8 +482,7 @@ namespace Bilin3d.Modules {
             
             Get["/info"] = parameters => {
                this.RequiresAuthentication();
-               var user =  db.Select<UserModel>(string.Format(@"
-                    select * from t_user where Id='{0}'", Page.UserId)).FirstOrDefault();
+                var user = db.Single<UserModel>("select * from t_user where Id=@Id", new { Id = Page.UserId });
                 base.Page.Title = "个人信息";
                 base.Model.User = user;
                 return View["Info", base.Model];
