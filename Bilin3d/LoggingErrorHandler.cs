@@ -13,13 +13,8 @@ namespace Bilin3d {
         public void Handle(HttpStatusCode statusCode, NancyContext context) {
             object errorObject;
             context.Items.TryGetValue(NancyEngine.ERROR_EXCEPTION, out errorObject);
-            var error = errorObject as Exception;
-
-            //Task tasks = new Task(() => {
-            //    _logger.Error("Unhandled error", error);
-            //});
-            //tasks.Start();
-             
+            var error = (errorObject as Exception).InnerException;
+                           
             //new Task(() => {
             //    _logger.Error("发生错误啦!", error);
             //}).Start();

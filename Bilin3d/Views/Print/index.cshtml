@@ -130,7 +130,7 @@
                 //alert(Num);
                 //return;
                 $.ajax({
-                    url: '/print/addcar',
+                    url: '/car/add',
                     data: {
                         MaterialId: MaterialId,
                         Num: Num,
@@ -144,7 +144,7 @@
                     dataType: 'json',
                     success: function (data) {
                         //alert("成功！");
-                        $("#checkout").removeAttr("disabled").attr("href", "/account/checkcar");
+                        $("#checkout").removeAttr("disabled").attr("href", "/car");
 
                         //刷新顶部购物车
                         getcar();

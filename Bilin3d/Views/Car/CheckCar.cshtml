@@ -24,11 +24,11 @@
         $(function () {
             $("#jiezhang").click(function () {              
                 $.ajax({
-                    url: '/account/checkcar',
+                    url: '/car',
                     data:$("form").serialize(),
                     type: 'POST',  
                     success: function (data) {
-                        window.location = "/account/checkout";
+                        window.location = "/car/checkout";
                         return;
                     },
                     error: function (data) {
@@ -104,7 +104,7 @@
                                     <div style="font-size:12px;color:#999;">单次最低价格:￥@item.Price1</div>
                                 </td>
                                 <td>
-                                    <a class="btn btn-u btn-brd btn-primary btn-sm delcar" delurl="/print/material/del/@item.CarDetailId-@item.CarId">删除</a>
+                                    <a class="btn btn-u btn-brd btn-primary btn-sm delcar" delurl="/car/material/del/@item.CarDetailId-@item.CarId">删除</a>
                                 </td>
                             </tr>
                         }

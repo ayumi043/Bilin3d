@@ -946,7 +946,7 @@
     <Content Include="Views\Admin\Login.cshtml" />
     <Content Include="Views\Admin\Order.cshtml" />
     <Content Include="Views\Admin\_Layout.cshtml" />
-    <Content Include="Views\Account\OrderDetail.cshtml" />
+    <Content Include="Views\Order\Detail.cshtml" />
     <Content Include="packages.config" />
     <None Include="Views\Admin\Index.cshtml" />
     <Content Include="Web.config">
@@ -970,6 +970,8 @@
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Modules\CarModule.cs" />
+    <Compile Include="Modules\OrderModule.cs" />
     <Compile Include="Modules\AccountModule.cs" />
     <Compile Include="Modules\BaseModule.cs">
       <SubType>Code</SubType>
@@ -1008,14 +1010,14 @@
     <Content Include="assets\plugins\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\deploy_bilin.pubxml" />
     <Content Include="Views\Account\FindPwd.cshtml" />
-    <Content Include="Views\Account\Order.cshtml" />
+    <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\_Acount.cshtml" />
     <Content Include="Views\Home\404.cshtml" />
     <None Include="Views\Print\index.cshtml" />
-    <Content Include="Views\Account\CheckCar.cshtml" />
+    <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />
     <Content Include="Views\Home\Wiki.cshtml" />
-    <Content Include="Views\Account\CheckOut.cshtml" />
+    <Content Include="Views\Car\CheckOut.cshtml" />
     <Content Include="Views\Print\index - 复制.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

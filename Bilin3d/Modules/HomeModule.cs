@@ -17,12 +17,6 @@ namespace Bilin3d.Modules {
 
             Get["/"] = parameters => {             
                 base.Page.Title = "首页";
-
-                //log.Debug("hello");
-                //log.Info("hello world!");
-                //log.Error("xxxxx");
-
-                //throw (new System.Exception("test"));
                 return View["Index", base.Model];
             };
 

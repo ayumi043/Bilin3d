@@ -1,7 +1,7 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
 
 <ul class="nav nav-tabs nav-justified" id="menu-nav">
-    <li><a @if (Request.Path.ToLower().Contains("order"))   { <text> class="current" </text>  }  href="/account/order">我的订单</a></li>
+    <li><a @if (Request.Path.ToLower().Contains("order"))   { <text> class="current" </text>  }  href="/order">我的订单</a></li>
     <li><a @if (Request.Path.ToLower().Contains("secure")) { <text> class="current" </text>  }  href="/account/secure">账户安全</a></li>
     <li><a @if (Request.Path.ToLower().Contains("info"))    { <text> class="current" </text>  }  href="/account/info">个人信息</a></li>
     <li><a @if (Request.Path.ToLower().Contains("address")) { <text> class="current" </text>  }  href="/account/address">收货地址管理</a></li>

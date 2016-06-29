@@ -181,305 +181,7 @@ namespace Bilin3d.Modules {
                 //return View["FindPwdResult", base.Model];
                 return Response.AsJson(new { message = string.Format(@"密码已发送到您的邮箱中了，请查收!   {0}", email_url) });
             };
-
-            Get["/checkcar"] = parameters => {
-                base.Page.Title = "购物车";
-                if (base.Page.IsAuthenticated) {
-                    var cars = db.Select<CarModel>(string.Format(@"
-                        select t1.amount,
-                            t1.CarId as CarId,
-                            t2.Id as CarDetailId,
-                            t2.amount as AmountDetail,
-                            t2.filename,
-                            t2.area,
-                            t2.size,
-                            t2.num,
-                            t2.weight,
-                            t2.price,
-                            t3.price1,
-                            t3.name as MatName, 
-                            t3.Color as MatColor,
-                            t3.Accuracy as Accuracy,
-                            t3.Density as MatDensity,
-                            t3.Delivery as Delivery
-                        from T_Car t1
-                        left join T_CarDetail t2 on t2.CarId=t1.CarId
-                        left join T_Material t3 on t3.Id=t2.MaterialId
-                        where t1.UserId=(SELECT Id FROM T_User WHERE Email='{0}');
-                        ", Page.CurrentUser));
-                    base.Model.Cars = cars;
-                } else {
-                    var cars = db.Select<CarModel>(string.Format(@"
-                        select t1.amount,
-                            t1.CarId as CarId,
-                            t2.Id as CarDetailId,
-                            t2.amount as AmountDetail,
-                            t2.filename,
-                            t2.area,
-                            t2.size,
-                            t2.num,
-                            t2.weight,
-                            t2.price,
-                            t3.price1,
-                            t3.name as MatName, 
-                            t3.Color as MatColor,
-                            t3.Accuracy as Accuracy,
-                            t3.Delivery as Delivery
-                        from T_CarTemp t1
-                        left join T_CarDetailTemp t2 on t2.CarId=t1.CarId
-                        left join T_Material t3 on t3.Id=t2.MaterialId
-                        where t1.UserId='{0}';
-                        ", Session["TempUserId"].ToString()));
-                    base.Model.Cars = cars;
-                }
-                return View["CheckCar", base.Model];
-            };
-
-            Post["/checkcar"] = parameters => {
-                var cardetailids = Request.Form.cardetailid;
-                string[] nums = Request.Form.num.Value.Split(',');
-                string[] ids = cardetailids.Value.Split(',');
-                string carid = Request.Form.carid;
-              
-                #region 验证 nums，ids，carid是否都存在或合法
-                if (nums.All(i => Regex.IsMatch(i, @"^[1-9]\d*?$")) == false) {  //数量只能是大于0的数字
-                    base.Page.Errors.Add(new ErrorModel() { Name = "数量", ErrorMessage = "数量只能是大于0的数字" });
-                    //return View["CheckCar", base.Model];
-                }
-
-                string table_CarDetail = "";
-                if (Page.IsAuthenticated) {
-                    table_CarDetail = "T_CarDetail";
-                } else {
-                    table_CarDetail = "T_CarDetailTemp";
-                }
-                var ids_details = db.Select<string>(string.Format(@"
-                    select id from {0} where carid='{1}'", table_CarDetail, carid));
-                if (ids_details == null) {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "购物车", ErrorMessage = "购物车不存在" });
-                    //return View["CheckCar", base.Model];
-                }
-
-                if (ids.All(i => ids_details.Contains(i)) == false) {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "购物车", ErrorMessage = "购物车子id不存在" });
-                    //return View["CheckCar", base.Model];
-                }
-
-                if (base.Page.Errors.Count > 0) {
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);                   
-                }
-                #endregion
-
-
-                StringBuilder sql = new StringBuilder();
-                if (Page.IsAuthenticated) {
-                    var index = 0;
-                    foreach (var s in nums) {
-                        sql.Append(string.Format(@"
-                        update T_CarDetail t1 set 
-                                Num={0},
-                                EditTime=NOW(),
-                                Amount = (
-	                                SELECT
-		                                CASE
-		                                WHEN SUM(t1.Price * {0}) > mat.Price1 THEN
-			                                SUM(t1.Price * {0})
-		                                ELSE
-			                                mat.Price1
-		                                END
-	                                FROM
-		                                T_Material mat where mat.Id = t1.MaterialId                                
-                                )
-                        where Id='{1}';", s, ids[index]));
-                        index++;
-                    }
-                    sql.Append(string.Format(@"
-                                update T_Car 
-                                set EditTime=NOW(), 
-                                Amount=(select SUM(Amount) from T_CarDetail where CarId='{0}') 
-                                where carid='{0}'", carid));
-
-                } else {
-                    var index = 0;
-                    foreach (var s in nums) {
-                        sql.Append(string.Format(@"
-                        update T_CarDetailTemp t1 set 
-                                Num={0},
-                                EditTime=NOW(),
-                                Amount = (
-	                                SELECT
-		                                CASE
-		                                WHEN SUM(t1.Price * {0}) > mat.Price1 THEN
-			                                SUM(t1.Price * {0})
-		                                ELSE
-			                                mat.Price1
-		                                END
-	                                FROM
-		                                T_Material mat where mat.Id = t1.MaterialId                                
-                                )
-                        where Id='{1}';", s, ids[index]));
-                        index++;
-                    }
-                    sql.Append(string.Format(@"
-                                update T_CarTemp 
-                                set EditTime=NOW(), 
-                                    Amount=(select SUM(Amount) from T_CarDetailTemp where CarId='{0}') 
-                                where CarId='{0}'", carid));
-                }
-                db.ExecuteNonQuery(sql.ToString());
-
-                //log.Error(cardetailids);
-                //return Response.AsRedirect("/account/checkout");
-                return null;
-            };
-
-            Get["/checkout"] = parameters => {
-                this.RequiresAuthentication();
-                base.Page.Title = "结账";
-                var cars = db.Select<CarModel>(string.Format(@"
-                        select t1.amount,
-                            t1.id as CarId,
-                            t2.Id as CarDetailId,
-                            t2.amount as AmountDetail,
-                            t2.filename,
-                            t2.area,
-                            t2.size,
-                            t2.volume,
-                            t2.num,
-                            t2.weight,
-                            t2.price,
-                            t3.price1,
-                            t3.name as MatName, 
-                            t3.Color as MatColor,
-                            t3.Accuracy as Accuracy,
-                            t3.Density as MatDensity,
-                            t3.Delivery as Delivery
-                        from T_Car t1
-                        left join T_CarDetail t2 on t2.CarId=t1.CarId
-                        left join T_Material t3 on t3.Id=t2.MaterialId
-                        where t1.UserId='{0}';
-                        ", Page.UserId));
-
-                var addresses = db.Select<AddressModel>(string.Format(@"
-                        select *
-                        from t_address
-                        where userid='{0}'
-                        ", Page.UserId));
-
-                base.Model.Cars = cars;
-                base.Model.Addresses = addresses;                
-                return View["CheckOut", base.Model]; 
-            };
-
-            Get["/address"] = parameters => {
-                this.RequiresAuthentication();
-                var addresses = db.Select<AddressModel>(string.Format(@"
-                        select *
-                        from t_address
-                        where userid='{0}'
-                        ", Page.UserId));
-                base.Page.Title = "收货地址管理";
-                base.Model.Addresses = addresses;
-                return View["Address", base.Model]; 
-            };
-
-            Post["/address"] = parameters => {
-                this.RequiresAuthentication();
-                string id = Request.Form.id;
-                int i = db.ExecuteNonQuery(string.Format(@"
-                    delete from t_address where id='{0}' and UserId='{1}' ", id, Page.UserId));
-                if (i < 1) {
-                    return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
-                }
-                return 200;
-            };
-
-            Get["/address/{id}"] = parameters => {
-                this.RequiresAuthentication();
-                string id = parameters.id;
-                var address = db.Select<AddressModel>(string.Format(@"
-                    select * from t_address where id='{0}' and UserId='{1}' ", id, Page.UserId)).FirstOrDefault();
-                base.Page.Title = address.Consignee;
-                base.Model.Address = address;
-                return View["AddressEdit", base.Model]; 
-            };
-
-            Post["/address/{id}"] = parameters => {
-                this.RequiresAuthentication();
-                 var model = this.Bind<AddressModel>();
-                 var result = this.Validate(model);
-
-                 if (!result.IsValid) {
-                     base.Model.RegisterModel = model;
-
-                     foreach (var item in result.Errors) {
-                         foreach (var member in item.Value) {
-                             base.Page.Errors.Add(new ErrorModel() { Name = item.Key, ErrorMessage = member.ErrorMessage });
-                         }
-                     }
-                     return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                 }
-                
-                 string sql = "";
-                 if (model.State == "1") {
-                     sql += string.Format(@"update t_address set state='0' where userid='{0}' and state='1';", Page.UserId);
-                 }
-                 sql += string.Format(@"
-                    update t_address 
-                    set Consignee='{0}', 
-                        Province='{1}',
-                        City='{2}',
-                        Dist='{3}',
-                        Address='{4}',
-                        Tel='{5}',
-                        Company='{6}',
-                        State='{7}'
-                    where id='{8}' and UserId='{9}';
-                    ",model.Consignee,model.Province,model.City,model.Dist,model.Address,
-                     model.Tel,model.Company,model.State, model.Id, Page.UserId);
-                 db.ExecuteNonQuery(sql);
-                return 200;
-            };
-
-            Post["/address/add"] = parameters => {
-                this.RequiresAuthentication();
-                var model = this.Bind<AddressModel>();
-                var result = this.Validate(model);
-
-                if (!result.IsValid) {                   
-                    base.Model.RegisterModel = model;
-                    foreach (var item in result.Errors) {
-                        foreach (var member in item.Value) {
-                            base.Page.Errors.Add(new ErrorModel() { Name = item.Key, ErrorMessage = member.ErrorMessage });
-                        }
-                    }
-
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }               
-
-                var count = db.Select<string>(string.Format(@"
-                    select count(1) from t_address where userid='{0}'", Page.UserId)).FirstOrDefault();
-                if ( count != null && int.Parse(count) > 20 ){
-                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "收货地址不能超过20个" });
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }
-
-                string sql = "";
-                if (model.State == "1") {
-                    sql += string.Format(@"update t_address set state='0' where userid='{0}' and state='1';",Page.UserId);
-                }
-                sql += string.Format(@"
-                    insert into t_address(userid,company,Consignee,tel,Province,city,dist,address,state)
-                        values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}');
-                ", Page.UserId, model.Company, model.Consignee, model.Tel, model.Province, model.City, model.Dist, model.Address, model.State);
-                db.ExecuteNonQuery(sql);
-
-                var address = db.Select<AddressModel>(string.Format(@"
-                    select * from t_address where id=(select max(id) from t_address where userid='{0}')", Page.UserId)).FirstOrDefault();
-
-                return Response.AsJson(address);
-            };
-            
+                                                          
             Get["/info"] = parameters => {
                this.RequiresAuthentication();
                 var user = db.Single<UserModel>("select * from t_user where Id=@Id", new { Id = Page.UserId });
@@ -536,137 +238,130 @@ namespace Bilin3d.Modules {
                 return Response.AsJson(new { filename = _filename });
             };
 
-            Post["/order"] = parameters => {
+            Get["/address"] = parameters => {
                 this.RequiresAuthentication();
-                string addressid = Request.Form.addressid;
-                string payid = Request.Form.payid;
-                string remark = Request.Form.remark;
-
-                string province = db.Select<string>(string.Format(@"
-                    select Province from t_address where Id='{0}'", addressid)).FirstOrDefault();
-                if (province == null) {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "收货地址不能为空" });
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }
-
-                string pay = db.Select<string>(string.Format(@"
-                    select name from t_pay where Id='{0}'", payid)).FirstOrDefault();
-                if (pay == null) {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "支付方式不能为空" });
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }
-
-                decimal kd = 22;
-                if (province.Contains("福建")) {
-                    kd = 13;
-                }
-
-                string stateId = "1";
-                string orderid = Page.UserId + DateTime.Now.ToString("yyyyMMddhhmmssffff");
-                string sql = string.Format(@"
-                        INSERT INTO t_order (OrderId,UserId, Amount, AddressId, Remark, StateId,EditTime, CreateTime)
-                        SELECT '{0}',UserId, Amount+{2}, '{3}','{4}','{5}',NOW(), NOW()
-                        FROM T_Car
-                        WHERE UserId='{1}';
-
-                        INSERT INTO t_orderdetail (OrderId,FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,EditTime,CreateTime)
-                        SELECT '{0}',FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,NOW(),NOW()
-                        FROM T_CarDetail
-                        WHERE CarId=(SELECT CarId FROM T_Car WHERE UserId='{1}');
-
-                        delete FROM T_CarDetail WHERE CarId=(SELECT CarId FROM T_Car WHERE UserId='{1}');
-                        delete from T_Car WHERE UserId='{1}';
-                    ", orderid, Page.UserId, kd, addressid, remark, stateId);
-                db.ExecuteNonQuery(sql);
-                return Response.AsJson(new { 
-                    message="success"
-                });
+                var addresses = db.Select<AddressModel>(string.Format(@"
+                        select *
+                        from t_address
+                        where userid='{0}'
+                        ", Page.UserId));
+                base.Page.Title = "收货地址管理";
+                base.Model.Addresses = addresses;
+                return View["Address", base.Model];
             };
 
-            Get["/order"] = parameters => {
+            Post["/address"] = parameters => {
                 this.RequiresAuthentication();
-                string stateid = Request.Query["state"].Value;
-
-                if (stateid != null) {
-                    if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {  //数量只能是大于0的数字
-                        return null;
-                    }
+                string id = Request.Form.id;
+                int i = db.ExecuteNonQuery(string.Format(@"
+                    delete from t_address where id='{0}' and UserId='{1}' ", id, Page.UserId));
+                if (i < 1)
+                {
+                    return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
                 }
-               
-                string condition = " and 1=1 ";
-                if (stateid != null) {
-                    condition = string.Format(@" and t3.Id='{0}' ", stateid);
-                }
-
-                var orderStates = db.Select<OrderStateModel>(string.Format(@"
-                    select id,statename from t_orderstate"));
-                var orders = db.Select<OrderModel>(string.Format(@"
-                    select t1.OrderId,
-                        t1.Express,
-                        t1.CreateTime,
-                        t1.Amount,
-                        t2.Area,
-                        t2.Size,
-                        t2.Volume,
-                        t2.Weight,
-                        t2.FileName,
-                        t2.Num,
-                        t5.name as MatName,
-                        t3.StateName,
-                        t3.Id as StateId,
-                        t4.Consignee,
-                        t4.Address 
-                    from t_order  t1
-                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
-                    left join t_orderstate   t3 on t3.Id=t1.StateId
-                    left join t_address  t4 on t4.Id=t1.AddressId
-                    left join t_material  t5 on t5.Id=t2.MaterialId
-                    where t1.UserId='{0}' {1}
-                    order by t1.CreateTime desc", Page.UserId, condition))
-                                        //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
-                                          .GroupBy(i => i.OrderId)
-                                          .ToDictionary(k => k.Key, v => v.ToList());
-                base.Page.Title = "我的订单";
-                base.Model.OrderStates = orderStates;
-                base.Model.Orders = orders;
-                return View["Order", base.Model];
+                return 200;
             };
 
-            Get["/order/{id}"] = parameters => {
+            Get["/address/{id}"] = parameters => {
                 this.RequiresAuthentication();
                 string id = parameters.id;
-                var order = db.Select<OrderModel>(string.Format(@"
-                    select t1.OrderId,
-                        t1.Express,
-                        t1.CreateTime,
-                        t1.Amount,
-                        t2.Area,
-                        t2.Size,
-                        t2.Volume,
-                        t2.Weight,
-                        t2.FileName,
-                        t2.Num,
-                        t5.name as MatName,
-                        t3.StateName,
-                        t3.Id as StateId,
-                        t4.Consignee,
-                        t4.Address 
-                    from t_order  t1
-                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
-                    left join t_orderstate   t3 on t3.Id=t1.StateId
-                    left join t_address  t4 on t4.Id=t1.AddressId
-                    left join t_material  t5 on t5.Id=t2.MaterialId
-                    where t1.UserId='{0}' and t2.OrderId='{1}'
-                    order by t1.CreateTime desc", Page.UserId,id)).FirstOrDefault();
-                base.Page.Title = "订详明细";
-                base.Model.Order = order;
-                return View["Order", base.Model];
+                var address = db.Select<AddressModel>(string.Format(@"
+                    select * from t_address where id='{0}' and UserId='{1}' ", id, Page.UserId)).FirstOrDefault();
+                base.Page.Title = address.Consignee;
+                base.Model.Address = address;
+                return View["AddressEdit", base.Model];
             };
 
+            Post["/address/{id}"] = parameters => {
+                this.RequiresAuthentication();
+                var model = this.Bind<AddressModel>();
+                var result = this.Validate(model);
+
+                if (!result.IsValid)
+                {
+                    base.Model.RegisterModel = model;
+
+                    foreach (var item in result.Errors)
+                    {
+                        foreach (var member in item.Value)
+                        {
+                            base.Page.Errors.Add(new ErrorModel() { Name = item.Key, ErrorMessage = member.ErrorMessage });
+                        }
+                    }
+                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                string sql = "";
+                if (model.State == "1")
+                {
+                    sql += string.Format(@"update t_address set state='0' where userid='{0}' and state='1';", Page.UserId);
+                }
+                sql += string.Format(@"
+                    update t_address 
+                    set Consignee='{0}', 
+                        Province='{1}',
+                        City='{2}',
+                        Dist='{3}',
+                        Address='{4}',
+                        Tel='{5}',
+                        Company='{6}',
+                        State='{7}'
+                    where id='{8}' and UserId='{9}';
+                    ", model.Consignee, model.Province, model.City, model.Dist, model.Address,
+                    model.Tel, model.Company, model.State, model.Id, Page.UserId);
+                db.ExecuteNonQuery(sql);
+                return 200;
+            };
+
+            Post["/address/add"] = parameters => {
+                this.RequiresAuthentication();
+                var model = this.Bind<AddressModel>();
+                var result = this.Validate(model);
+
+                if (!result.IsValid)
+                {
+                    base.Model.RegisterModel = model;
+                    foreach (var item in result.Errors)
+                    {
+                        foreach (var member in item.Value)
+                        {
+                            base.Page.Errors.Add(new ErrorModel() { Name = item.Key, ErrorMessage = member.ErrorMessage });
+                        }
+                    }
+
+                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                var count = db.Select<string>(string.Format(@"
+                    select count(1) from t_address where userid='{0}'", Page.UserId)).FirstOrDefault();
+                if (count != null && int.Parse(count) > 20)
+                {
+                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "收货地址不能超过20个" });
+                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                string sql = "";
+                if (model.State == "1")
+                {
+                    sql += string.Format(@"update t_address set state='0' where userid='{0}' and state='1';", Page.UserId);
+                }
+                sql += string.Format(@"
+                    insert into t_address(userid,company,Consignee,tel,Province,city,dist,address,state)
+                        values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}');
+                ", Page.UserId, model.Company, model.Consignee, model.Tel, model.Province, model.City, model.Dist, model.Address, model.State);
+                db.ExecuteNonQuery(sql);
+
+                var address = db.Select<AddressModel>(string.Format(@"
+                    select * from t_address where id=(select max(id) from t_address where userid='{0}')", Page.UserId)).FirstOrDefault();
+
+                return Response.AsJson(address);
+            };
         }
 
-        private void ConvertTempCar(IDbConnection db, IRootPathProvider pathProvider, Guid? userGuid) {
-            if (Session["CarAdded"] != null) {
+        private void ConvertTempCar(IDbConnection db, IRootPathProvider pathProvider, Guid? userGuid)
+        {
+            if (Session["CarAdded"] != null)
+            {
                 string sql = "";
                 string userid = "";
                 userid = db.Select<string>(string.Format(@"select Id from T_User where userGuid = '{0}'", userGuid.Value)).FirstOrDefault();
@@ -685,11 +380,13 @@ namespace Bilin3d.Modules {
                 string fileName = "";
                 string destFile = "";
 
-                if (System.IO.Directory.Exists(sourcePath)) {
+                if (System.IO.Directory.Exists(sourcePath))
+                {
                     string[] files = System.IO.Directory.GetFiles(sourcePath, Session["TempUserId"].ToString() + "*");
 
                     // Copy the files and overwrite destination files if they already exist.
-                    foreach (string s in files) {
+                    foreach (string s in files)
+                    {
                         // Use static Path methods to extract only the file name from the path.
                         fileName = userid + "$" + string.Join("$", System.IO.Path.GetFileName(s).Split('$').Skip(1));
 
@@ -702,14 +399,17 @@ namespace Bilin3d.Modules {
 
                 //判断用户是否在购物车中有记录, 存在就不需要写入主表只要写入子表就可以了
                 var carid = db.Select<string>(string.Format(@"select CarId from T_Car where UserId = '{0}'", userid)).FirstOrDefault();
-                if (carid != null) {
+                if (carid != null)
+                {
                     sql = string.Format(@"
                         INSERT INTO T_CarDetail (CarId,FileName,Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime)
                         SELECT '{0}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime
                         FROM T_CarDetailTemp
                         WHERE CarId=(SELECT CarId FROM T_CarTemp WHERE UserId='{1}');
                     ", carid, Session["TempUserId"].ToString(), fileName);
-                } else {
+                }
+                else
+                {
                     carid = Guid.NewGuid().ToString("N");
                     sql = string.Format(@"
                         INSERT INTO T_Car (CarId,UserId, Amount, EditTime, CreateTime)
@@ -721,7 +421,7 @@ namespace Bilin3d.Modules {
                         SELECT '{3}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume
                         FROM T_CarDetailTemp
                         WHERE CarId=(SELECT CarId FROM T_CarTemp WHERE UserId='{1}');
-                    ", userid, Session["TempUserId"].ToString(), fileName,carid);
+                    ", userid, Session["TempUserId"].ToString(), fileName, carid);
                 }
 
                 db.ExecuteNonQuery(sql);

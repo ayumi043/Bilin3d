@@ -1,13 +1,13 @@
 ﻿/* Write here your custom javascript codes */
 
 var getcar = function () {
-    $.get("/print/car", function (data) {
+    $.get("/car/get", function (data) {
         if (data.length > 0) {
             var _html = "";
             var _totalnum = 0
             $.each(data, function (index, item) {
                 _html += "<li class='carli'>" +
-                            "3D打印产品" + "<div class='pull-right'>￥" + item.price + "元 x" + item.num + "<span style='padding-left:10px;'><a class='delcar' style='color:red;' delurl='/print/material/del/" + item.carDetailId + "-" + item.carId + "'>删除</a></span></div>" + "<br>" +
+                            "3D打印产品" + "<div class='pull-right'>￥" + item.price + "元 x" + item.num + "<span style='padding-left:10px;'><a class='delcar' style='color:red;' delurl='/car/material/del/" + item.carDetailId + "-" + item.carId + "'>删除</a></span></div>" + "<br>" +
                             "- 文件:" + item.fileName + "<span>" + "<br>" +
                             "- 材料:" + item.matName + "<br>" +
                             "- 颜色:" + item.matColor + "<br>" +
