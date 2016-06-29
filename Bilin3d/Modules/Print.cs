@@ -341,7 +341,7 @@ namespace Bilin3d.Modules {
                             t3.Delivery as Delivery
                         from T_Car t1
                         left join T_CarDetail t2 on t2.CarId=t1.CarId
-                        left join T_Material t3 on t3.Id=t2.MaterialId
+                        left join T_Material t3 on t3.MaterialId=t2.MaterialId
                         where t1.UserId=(SELECT Id FROM T_User WHERE Email=@Email);
                         ", new { Email = Page.CurrentUser });
                     return Response.AsJson(cars.Select(i => new {
@@ -359,6 +359,7 @@ namespace Bilin3d.Modules {
                     }));
 
                 } else {
+                    //log.Debug(Session["TempUserId"]);
                     var cars = db.Select<CarModel>(@"
                         select t1.amount,
                             t1.CarId as CarId,
@@ -374,7 +375,7 @@ namespace Bilin3d.Modules {
                             t3.Delivery as Delivery
                         from T_CarTemp t1
                         left join T_CarDetailTemp t2 on t2.CarId=t1.CarId
-                        left join T_Material t3 on t3.Id=t2.MaterialId
+                        left join T_Material t3 on t3.MaterialId=t2.MaterialId
                         where t1.UserId=@UserId;
                         ", new { UserId = Session["TempUserId"].ToString() });
                     return Response.AsJson(cars.Select(i => new {

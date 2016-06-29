@@ -132,7 +132,7 @@ namespace Bilin3d {
             pipelines.BeforeRequest += (ctx) => {      
                 var uid = ctx.Request.Session["TempUserId"];
                 var user = ctx.CurrentUser;
-                if (user == null & uid == null) {
+                if (user == null && uid == null) {
                     //ctx.Request.Session["TempUserId"] = "temp-" + DateTime.Now.ToString("-yyyy-MM-dd-hh-mm-ss-fffff");
                     ctx.Request.Session["TempUserId"] = "temp-" + Guid.NewGuid().ToString();
                 }
