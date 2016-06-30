@@ -989,11 +989,11 @@
   <ItemGroup>
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\_Layout.cshtml" />
-    <Content Include="Views\_IndexBlock.cshtml" />
+    <Content Include="Views\Home\_IndexBlock.cshtml" />
     <Content Include="Views\Account\Error.cshtml" />
     <Content Include="Views\Account\LogOn.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\_ImageSlider.cshtml" />
+    <Content Include="Views\Home\_ImageSlider.cshtml" />
     <Content Include="assets\plugins\font-awesome\fonts\fontawesome-webfont.ttf" />
     <Content Include="assets\plugins\font-awesome\fonts\fontawesome-webfont.woff" />
     <Content Include="assets\plugins\font-awesome\fonts\fontawesome-webfont.woff2" />

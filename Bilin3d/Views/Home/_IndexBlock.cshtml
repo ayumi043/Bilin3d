@@ -73,6 +73,60 @@
 </div>
 
 
+<style>
+    #map {
+        width: 100%;
+        height: 510px;
+    }
+</style>
+<div id="map"></div>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=26904d2efeb684d7d59d493098e7295d"></script>
+<script src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+<script>
+    var map = new BMap.Map("map", {});                         // 创建Map实例
+    map.centerAndZoom(new BMap.Point(105.000, 38.000), 5);     // 初始化地图,设置中心点坐标和地图级别
+    map.enableScrollWheelZoom();                               //启用滚轮放大缩小
+    var data_info = [
+        [116.417854, 39.921988, "地址：北京市东城区王府井大街88号乐天银泰百货八层"],
+        [116.406605, 39.921585, "地址：北京市东城区东华门大街"],
+        [116.412222, 39.912345, "地址：北京市东城区正义路甲5号"],
+        [118.038, 25.472, "地址：福建省xx市有限公司"],
+        [94.29, 35.747, "地址：福建省xx市有限公司"]
+    ];
+    var opts = {
+        width: 250,     // 信息窗口宽度
+        height: 20,     // 信息窗口高度
+        //title: "信息窗口", // 信息窗口标题
+        enableMessage: true//设置允许信息窗发送短息
+    };
+
+    var markers = [];
+    for (var i = 0; i < data_info.length; i++) {
+        var marker = new BMap.Marker(new BMap.Point(data_info[i][0], data_info[i][1]));  // 创建标注
+        var content = data_info[i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content, marker);
+
+        markers.push(marker);
+    }
+    //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+    var markerClusterer = new BMapLib.MarkerClusterer(map, { markers: markers });
+
+    function addClickHandler(content, marker) {
+        marker.addEventListener("click", function (e) {
+                openInfo(content, e)
+            }
+		);
+    }
+    function openInfo(content, e) {
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow, point); //开启信息窗口
+    }
+</script>
+
 
 <div class="container content-sm">
     <div class="row">
