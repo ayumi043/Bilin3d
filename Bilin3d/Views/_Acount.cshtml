@@ -5,7 +5,6 @@
     <li><a @if (Request.Path.ToLower().Contains("secure")) { <text> class="current" </text>  }  href="/account/secure">账户安全</a></li>
     <li><a @if (Request.Path.ToLower().Contains("info"))    { <text> class="current" </text>  }  href="/account/info">个人信息</a></li>
     <li><a @if (Request.Path.ToLower().Contains("address")) { <text> class="current" </text>  }  href="/account/address">收货地址管理</a></li>
-    <li><a href="">增票资质</a></li>
 </ul>
 <style>
     #menu-nav{margin-bottom:50px;}
