@@ -57,9 +57,9 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu hoverSelectorBlock">
-                                    <li @if (Request.Query["state"] == null) { <text> class="active" </text>   }><a href="/account/order">全部状态</a></li>
+                                    <li @if (Request.Query["state"] == null) { <text> class="active" </text>   }><a href="/order">全部状态</a></li>
                                     @foreach (var item in Model.OrderStates) {
-                                    <li @if (Request.Query["state"].Value == item.Id.ToString()) { <text> class="active" </text>   }><a href="/account/order?state=@item.Id&name=@item.StateName">@item.StateName</a></li>
+                                    <li @if (Request.Query["state"].Value == item.Id.ToString()) { <text> class="active" </text>   }><a href="/order?state=@item.Id&name=@item.StateName">@item.StateName</a></li>
                                     }
                                 </ul>
                             </li>
@@ -69,7 +69,7 @@
             </table>
         @foreach (var item in Model.Orders) {
             <table class="table table-bordered ordertable">
-                @{  
+                @{
                     var createtime = item.Value[0].CreateTime; 
                     var consignee = item.Value[0].Consignee; 
                     var statename = item.Value[0].StateName; 
