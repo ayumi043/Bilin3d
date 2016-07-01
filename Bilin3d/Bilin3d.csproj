@@ -873,6 +873,7 @@
     <Content Include="assets\css\ie8.css" />
     <Content Include="assets\css\pages\page_404_error.css" />
     <Content Include="assets\css\pages\page_log_reg_v1.css" />
+    <Content Include="assets\css\pages\profile.css" />
     <Content Include="assets\css\plugins.css" />
     <Content Include="assets\css\plugins\style-switcher.css" />
     <Content Include="assets\css\style.css" />
@@ -971,6 +972,7 @@
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Modules\CarModule.cs" />
+    <Compile Include="Modules\HubModule.cs" />
     <Compile Include="Modules\OrderModule.cs" />
     <Compile Include="Modules\AccountModule.cs" />
     <Compile Include="Modules\BaseModule.cs">
@@ -1013,6 +1015,7 @@
     <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\_Acount.cshtml" />
     <Content Include="Views\Home\404.cshtml" />
+    <Content Include="Views\Hub\Index.cshtml" />
     <None Include="Views\Print\index.cshtml" />
     <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />
