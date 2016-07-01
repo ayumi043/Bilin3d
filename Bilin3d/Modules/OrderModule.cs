@@ -25,22 +25,20 @@ namespace Bilin3d.Modules {
     public class OrderModule : BaseModule {
         public OrderModule(IDbConnection db, ILog log, IRootPathProvider pathProvider)
             : base("/Order") {
-            
-            Get["/"] = parameters => {
-                this.RequiresAuthentication();
-                string stateid = Request.Query["state"].Value;
 
-                if (stateid != null)
-                {
-                    if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$"))
-                    {  //数量只能是大于0的数字
+            this.RequiresAuthentication();
+
+            Get["/"] = parameters => {
+                string stateid = Request.Query["state"].Value;
+                if (stateid != null) {
+                    if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {
+                        //只能是大于0的数字
                         return null;
                     }
                 }
 
                 string condition = " and 1=1 ";
-                if (stateid != null)
-                {
+                if (stateid != null) {
                     condition = string.Format(@" and t3.Id='{0}' ", stateid);
                 }
 
@@ -69,9 +67,9 @@ namespace Bilin3d.Modules {
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     where t1.UserId='{0}' {1}
                     order by t1.CreateTime desc", Page.UserId, condition))
-                                          //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
-                                          .GroupBy(i => i.OrderId)
-                                          .ToDictionary(k => k.Key, v => v.ToList());
+                    //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
+                    .GroupBy(i => i.OrderId)
+                    .ToDictionary(k => k.Key, v => v.ToList());
                 base.Page.Title = "我的订单";
                 base.Model.OrderStates = orderStates;
                 base.Model.Orders = orders;
@@ -79,30 +77,26 @@ namespace Bilin3d.Modules {
             };
 
             Post["/"] = parameters => {
-                this.RequiresAuthentication();
                 string addressid = Request.Form.addressid;
                 string payid = Request.Form.payid;
                 string remark = Request.Form.remark;
 
-                string province = db.Select<string>(string.Format(@"
-                    select Province from t_address where Id='{0}'", addressid)).FirstOrDefault();
-                if (province == null)
-                {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "收货地址不能为空" });
+                string province = db.Select<string>(@"
+                    select Province from t_address where Id=@addressid", new {addressid = addressid}).FirstOrDefault();
+                if (province == null) {
+                    base.Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "收货地址不能为空"});
                     return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
-                string pay = db.Select<string>(string.Format(@"
-                    select name from t_pay where Id='{0}'", payid)).FirstOrDefault();
-                if (pay == null)
-                {
-                    base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "支付方式不能为空" });
+                string pay = db.Select<string>(@"
+                    select name from t_pay where Id=@payid", new {payid = payid}).FirstOrDefault();
+                if (pay == null) {
+                    base.Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "支付方式不能为空"});
                     return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
                 decimal kd = 22;
-                if (province.Contains("福建"))
-                {
+                if (province.Contains("福建")) {
                     kd = 13;
                 }
 
@@ -123,14 +117,12 @@ namespace Bilin3d.Modules {
                         delete from T_Car WHERE UserId='{1}';
                     ", orderid, Page.UserId, kd, addressid, remark, stateId);
                 db.ExecuteNonQuery(sql);
-                return Response.AsJson(new
-                {
+                return Response.AsJson(new {
                     message = "success"
                 });
             };
 
             Get["/{id}"] = parameters => {
-                this.RequiresAuthentication();
                 string id = parameters.id;
                 var order = db.Select<OrderModel>(string.Format(@"
                     select t1.OrderId,
