@@ -32,8 +32,8 @@ namespace Bilin3d.Modules {
                 string stateid = Request.Query["state"].Value;
                 if (stateid != null) {
                     if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {
-                        //只能是大于0的数字
-                        return null;
+                        throw new Exception("stateid只能是大于0的数字");
+                        //return null;
                     }
                 }
 
