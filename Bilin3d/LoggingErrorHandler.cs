@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Nancy;
 using log4net;
+using Nancy;
 using Nancy.ErrorHandling;
-using System.Threading.Tasks;
 
 namespace Bilin3d {
     public class LoggingErrorHandler : IStatusCodeHandler {
