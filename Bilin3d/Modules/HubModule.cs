@@ -29,7 +29,7 @@ namespace Bilin3d.Modules {
             this.RequiresAuthentication();
 
             Get["/"] = parameters => {
-               
+                Page.Title = "成为HUB";
                 return View["Index", Model];
             };
 
