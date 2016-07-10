@@ -1,0 +1,125 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript{
+    <script>
+        $(function () {
+                     
+        });
+    </script>
+}
+
+<style>
+    .content{
+        padding-top:20px;
+    }
+
+    .list-group > li.active, .list-group > li.active:hover {
+        background: none;
+    }
+    .list-group > li > a:hover,
+    .list-group > li.active > a {
+        color: #72c02c !important;
+        font-weight:bold;
+    }
+
+    .list-group li a {
+        color: #666;
+        font-size: 14px;
+        padding: 12px 10px;
+    }
+
+    .list-group .active > a,
+    .list-group li > a:focus,
+    .list-group li > a:hover {
+        filter: none !important;
+        color: #72c02c !important;
+        background: inherit !important;
+    }
+   
+</style>
+
+
+<div class="row">
+    <!-- 左边菜单-->
+    @Html.Partial("_Hub.cshtml")
+    <!-- 左边菜单 -->
+    
+    <!-- Begin Content -->
+    <div class="col-md-9">
+        <div class="tag-box tag-box-v3 form-page">
+            <div class="headline"><h3>加入HUB</h3></div>
+
+            <p>加入3D HUB通过打印本地订单赚钱</p><br>
+          
+            <div class="margin-bottom-40"></div>
+
+            <!--Textarea-->
+            <h4>开始你的HUB之前</h4>
+            <p>你需要完成以下信息的填写才能加入HUB.</p><br>
+            <textarea class="form-control" rows="7"></textarea>
+            <!--End Textarea-->
+
+            <div class="margin-bottom-40"></div>
+
+            <!--Checkboxes and Radios-->
+            <h4>Checkboxes and Radios</h4>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="">
+                    Option one is this and that—be sure to include why it's great
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                    Option one is this and that—be sure to include why it's great
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Option two can be something else and selecting it will deselect option one
+                </label>
+            </div>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="inlineCheckbox1" value="option1"> 1
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
+            </label>
+            <!--End Checkboxes and Radios-->
+
+            <div class="margin-bottom-40"></div>
+
+            <!--Selects-->
+            <h4>Selects</h4>
+            <p>Use the default option, or add <code>multiple</code> to show multiple options at once.</p><br>
+            <select class="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <select multiple="" class="form-control">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <!--End Selects-->
+        </div>
+    </div>
+    <!-- End Content -->
+</div>

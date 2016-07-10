@@ -1016,6 +1016,7 @@
     <Content Include="Views\_Acount.cshtml" />
     <Content Include="Views\Home\404.cshtml" />
     <Content Include="Views\Hub\Index.cshtml" />
+    <Content Include="Views\Hub\Add.cshtml" />
     <None Include="Views\Print\index.cshtml" />
     <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />

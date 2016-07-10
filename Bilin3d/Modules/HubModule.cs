@@ -29,8 +29,17 @@ namespace Bilin3d.Modules {
             this.RequiresAuthentication();
 
             Get["/"] = parameters => {
-                Page.Title = "成为HUB";
+                Page.Title = "HUB首页";
                 return View["Index", Model];
+            };
+
+            Get["/add"] = parameters => {
+                Page.Title = "成为HUB";
+                var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1", new { id = Page.UserId });
+                if (!string.IsNullOrEmpty(supplierId)) {
+                    return null;
+                }
+                return View["Add", Model];
             };
 
             Post["/"] = parameters => {
