@@ -970,6 +970,8 @@
     <Compile Include="Models\Material.cs" />
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
+    <Compile Include="Models\CustomAnnotations\RequiredIfAttribute.cs" />
+    <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Modules\CarModule.cs" />
     <Compile Include="Modules\HubModule.cs" />

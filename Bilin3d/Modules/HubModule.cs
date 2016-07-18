@@ -35,10 +35,56 @@ namespace Bilin3d.Modules {
 
             Get["/add"] = parameters => {
                 Page.Title = "成为HUB";
-                var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1", new { id = Page.UserId });
+                var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
+                    new {id = Page.UserId});
+                //已经是hub了
                 if (!string.IsNullOrEmpty(supplierId)) {
-                    return null;
+                    Response.AsRedirect("/hub");
+                    //return null;
                 }
+
+                return View["Add", Model];
+            };
+
+            Post["/add"] = parameters => {
+                var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
+                    new {id = Page.UserId});
+                //已经是hub了
+                if (!string.IsNullOrEmpty(supplierId)) {
+                    throw new Exception("已经是hub(供应商)了");
+                }
+
+                var model = this.Bind<SupplierModel>();
+                var result = this.Validate(model);
+
+                model.SupplierId = Guid.NewGuid().ToString("N");
+                string sql = $@"
+                    INSERT INTO t_supplier (
+                        SupplierId,
+                        Tel,
+                        IdCard,
+                        Fname,
+                        IdCardPic1,
+                        CompanyName,
+                        Capital,
+                        Fcode,
+                        BlicensePic,
+                        Ftype
+                    )VALUES(
+                        '{supplierId}',
+                        '2',
+                        '3',
+                        '4',
+                        '5',
+                        '6',
+                        '7',
+                        '8',
+                        '9',
+                        '10'
+                        );";
+                db.ExecuteNonQuery(sql);
+
+
                 return View["Add", Model];
             };
 
