@@ -57,7 +57,16 @@ namespace Bilin3d.Modules {
                 var model = this.Bind<SupplierModel>();
                 var result = this.Validate(model);
 
-                var file = Request.Files.ToList()[0];
+                var files = Request.Files;
+                HttpFile file_Logo = null;
+                HttpFile file_IdCarPic1 = null;
+                HttpFile file_BlicensePic = null;
+                foreach (var file in files) {
+                    if (file.Key == "Logo") file_Logo = file;
+                    if (file.Key == "IdCarPic1") file_IdCarPic1 = file;
+                    if (file.Key == "BlicensePic") file_BlicensePic = file;
+                }
+
 
                 model.SupplierId = Guid.NewGuid().ToString("N");
                 string sql = $@"
