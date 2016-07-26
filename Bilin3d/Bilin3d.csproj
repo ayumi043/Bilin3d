@@ -1036,6 +1036,8 @@
   <ItemGroup>
     <Folder Include="Content\uploads\3d\" />
     <Folder Include="Content\uploads\avatars\" />
+    <Folder Include="Content\uploads\idpic\" />
+    <Folder Include="Content\uploads\logo\" />
     <Folder Include="Content\uploads\temp\" />
   </ItemGroup>
   <PropertyGroup>

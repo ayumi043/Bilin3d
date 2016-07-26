@@ -22,6 +22,8 @@ namespace Bilin3d.Models {
         public string Logo { get; set; }
 
         //[RequiredIf("Ftype", "0",ErrorMessage = "身份证不能为空")]
+        //^\d{18}$)|(^\d{15}$
+        [RegularExpression(@"(^\d{18}$)|(^\d{15}$)", ErrorMessage = "请输入正确的身份证号码")]
         public string IdCard { get; set; }
         public string Fname { get; set; }
         

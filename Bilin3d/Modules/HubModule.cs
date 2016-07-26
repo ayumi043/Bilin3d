@@ -57,6 +57,8 @@ namespace Bilin3d.Modules {
                 var model = this.Bind<SupplierModel>();
                 var result = this.Validate(model);
 
+                var file = Request.Files.ToList()[0];
+
                 model.SupplierId = Guid.NewGuid().ToString("N");
                 string sql = $@"
                     INSERT INTO t_supplier (
