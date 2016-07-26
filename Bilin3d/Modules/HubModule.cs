@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using Nancy.Security;
 using System.IO;
 using System.Threading.Tasks;
+using ServiceStack.Text;
 
 namespace Bilin3d.Modules {
     public class HubModule : BaseModule {
@@ -56,15 +57,53 @@ namespace Bilin3d.Modules {
 
                 var model = this.Bind<SupplierModel>();
                 var result = this.Validate(model);
+                if (!result.IsValid) {
+                    foreach (var item in result.Errors) {
+                        foreach (var member in item.Value) {
+                            base.Page.Errors.Add(new ErrorModel() {Name = item.Key, ErrorMessage = member.ErrorMessage});
+                        }
+                    }
+                    //return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
+                }
 
                 var files = Request.Files;
-                HttpFile file_Logo = null;
-                HttpFile file_IdCarPic1 = null;
-                HttpFile file_BlicensePic = null;
+                HttpFile file_Logo = null, file_IdCarPic1 = null, file_BlicensePic = null;
                 foreach (var file in files) {
                     if (file.Key == "Logo") file_Logo = file;
                     if (file.Key == "IdCarPic1") file_IdCarPic1 = file;
                     if (file.Key == "BlicensePic") file_BlicensePic = file;
+                }
+
+                if (file_Logo == null) {
+                    Page.Errors.Add(new ErrorModel() {Name = "Logo", ErrorMessage = "Logo不能为空"});
+                } else {
+                    string _filename = "", filename = "";
+                    string[] imgs = new string[] { ".jpg", ".png", ".gif", ".bmp", ".jpeg" };
+                    if (!imgs.Contains(System.IO.Path.GetExtension(file.Name).ToLower())) {
+                        base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "文件格式不正确" });
+                        return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
+                    }
+                    _filename = Page.UserId + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file.Name;
+                    filename = Path.Combine(uploadDirectory, _filename);
+                    using (FileStream fileStream = new FileStream(filename, FileMode.Create)) {
+                        file.Value.CopyTo(fileStream);
+                    }
+                }
+
+                //个人
+                if (model.Ftype == "0") {
+                   if(file_IdCarPic1 == null) Page.Errors.Add(new ErrorModel() { Name = "身份证扫描", ErrorMessage = "身份证扫描不能为空" });
+                   
+                }
+
+                //企业
+                if (model.Ftype == "1")
+                {
+
+                }
+
+                if (Page.Errors.Count > 0) {
+                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
 

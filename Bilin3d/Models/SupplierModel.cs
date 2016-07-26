@@ -17,14 +17,14 @@ namespace Bilin3d.Models {
 
         [Required(ErrorMessage = "地址不能为空")]
         public string Address { get; set; }
-
-        [Required(ErrorMessage = "Logo不能为空")]
+       
         public string Logo { get; set; }
 
         //[RequiredIf("Ftype", "0",ErrorMessage = "身份证不能为空")]
-        //^\d{18}$)|(^\d{15}$
-        [RegularExpression(@"(^\d{18}$)|(^\d{15}$)", ErrorMessage = "请输入正确的身份证号码")]
+        //[RegularExpression(@"(^\d{18}$)|(^\d{15}$)", ErrorMessage = "请输入正确的身份证号码")]
         public string IdCard { get; set; }
+
+        [Required(ErrorMessage = "名称不能为空")]
         public string Fname { get; set; }
         
         public string IdCardPic1 { get; set; }
@@ -32,6 +32,8 @@ namespace Bilin3d.Models {
         public string Capital { get; set; }
         public string Fcode { get; set; }
         public string BlicensePic { get; set; }
+
+        [Range(0,1,ErrorMessage = "用户类型错误")]
         public string Ftype { get; set; }
         public string Lng { get; set; }
         public string Lat { get; set; }
