@@ -59,10 +59,23 @@
     <!-- Begin Content -->
     <div class="col-md-9">
         <div class="tag-box tag-box-v3 form-page">
-            <div class="headline"><h3>加入HUB</h3></div>
+            <div class="headline">
+                <h3>加入HUB</h3>
+            </div>
             <p>加入3D HUB通过打印本地订单赚钱</p>
             <div class="margin-bottom-10"></div>
             <button type="submit" class="btn-u center">开始创建HUB</button>
+        </div>
+
+        <div class="row errormessage">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" @if (Model.Page.Errors.Count == 0) { <text> style="display:none;" </text>   }>
+                <h4>请认真填写信息!</h4>
+                <div id="errormessage">
+                    @foreach (var item in Model.Page.Errors) {
+                        <p>@item.ErrorMessage</p>
+                    }
+                </div>
+            </div>
         </div>
 
         <div class="tag-box tag-box-v3 form-page">
@@ -73,19 +86,19 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label">HUB名称：</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" name="Fname" id="fname" placeholder="名称">
+                        <input type="text" class="form-control" name="Fname" id="fname" value="" placeholder="名称">
                     </div>
-                </div>
+                </div> 
                 <div class="form-group">
                     <label class="col-lg-2 control-label">qq：</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" id="qq" name="QQ" placeholder="QQ">
+                        <input type="text" class="form-control" id="qq" name="QQ" value="" placeholder="QQ">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-lg-2 control-label">地址：</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" id="address" name="Address" placeholder="地址">
+                        <input type="text" class="form-control" id="address" name="Address" value="" placeholder="地址">
                     </div>
                 </div>
                 <div class="form-group">
@@ -97,7 +110,7 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label">电话：</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" id="tel" name="Tel" placeholder="电话">
+                        <input type="text" class="form-control" id="tel" name="Tel" value="" placeholder="电话">
                     </div>
                 </div>
                 <div class="form-group">
@@ -125,13 +138,19 @@
                     <div class="form-group">
                         <label class="col-lg-2 control-label">身份证号码：</label>
                         <div class="col-lg-5">
-                            <input type="text" class="form-control" name="IdCard" id="idcar" placeholder="身份证号码">
+                            <input type="text" class="form-control" name="IdCard" id="idcar" value="" placeholder="身份证号码">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-lg-2 control-label">身份证扫描件：</label>
+                        <label class="col-lg-2 control-label">身份证扫描件(正面)：</label>
                         <div class="col-lg-5">
-                            <input type="file" class="form-control" name="IdCarPic1" id="idcarpic1" placeholder="身份证扫描件">
+                            <input type="file" class="form-control" name="IdCarPic1" id="idcarpic1" placeholder="身份证扫描件(正面)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">身份证扫描件(反面)：</label>
+                        <div class="col-lg-5">
+                            <input type="file" class="form-control" name="IdCarPic2" id="idcarpic2" placeholder="身份证扫描件(反面)">
                         </div>
                     </div>
                 </div>
@@ -139,19 +158,19 @@
                     <div class="form-group">
                         <label class="col-lg-2 control-label">企业名称：</label>
                         <div class="col-lg-5">
-                            <input type="text" class="form-control" name="CompanyName" id="companyname" placeholder="企业名称">
+                            <input type="text" class="form-control" name="CompanyName" id="companyname" value="" placeholder="企业名称">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">注册资本：</label>
                         <div class="col-lg-5">
-                            <input type="text" class="form-control" name="Capital" id="Capital" placeholder="注册资本">
+                            <input type="text" class="form-control" name="Capital" id="Capital" value="" placeholder="注册资本">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">统一代码：</label>
                         <div class="col-lg-5">
-                            <input type="text" class="form-control" name="Fcode" id="Fcode" placeholder="统一代码">
+                            <input type="text" class="form-control" name="Fcode" id="Fcode" value="" placeholder="统一代码">
                         </div>
                     </div>
                     <div class="form-group">

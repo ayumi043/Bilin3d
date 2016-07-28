@@ -28,6 +28,7 @@ namespace Bilin3d.Models {
         public string Fname { get; set; }
         
         public string IdCardPic1 { get; set; }
+        public string IdCardPic2 { get; set; }
         public string CompanyName { get; set; }
         public string Capital { get; set; }
         public string Fcode { get; set; }
