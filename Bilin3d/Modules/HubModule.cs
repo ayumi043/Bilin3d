@@ -44,6 +44,8 @@ namespace Bilin3d.Modules {
                     //return null;
                 }
 
+                var supplierModel = new SupplierModel();
+                base.Model.SupplierModel = supplierModel;
                 return View["Add", Model];
             };
 
@@ -100,6 +102,11 @@ namespace Bilin3d.Modules {
 
                 //个人
                 if (model.Ftype == "0") {
+                    Regex reg = new Regex(@"(^\d{18}$)|(^\d{15}$)");
+                    if (model.IdCard == null || !reg.IsMatch(model.IdCard)) {
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "身份证号码格式不正确" });
+                    }
+
                     if (file_IdCarPic1 == null || file_IdCarPic2 == null) {
                         Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "身份证扫描不能为空"});
                     } else {
@@ -130,29 +137,35 @@ namespace Bilin3d.Modules {
 
                         model.IdCardPic2 = _filename;
                     }
-
-                    Regex reg = new Regex(@"(^\d{18}$)|(^\d{15}$)");
-                    if (model.IdCard == null || !reg.IsMatch(model.IdCard)) {
-                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "身份证号码格式不正确" });
-                    }
                 }
 
                 //企业
-                if (model.Ftype == "1")
-                {
-                    if (file_BlicensePic == null ){
-                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "营业执照扫描件不能为空" });
+                if (model.Ftype == "1") {
+                    if (model.CompanyName == null || model.CompanyName.Trim().Length < 2) {
+                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "请正确填写企业名称"});
+                    }
+                    if (model.Capital == null || model.Capital.Trim() == "") {
+                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "注册资本不能为空"});
+                    }
+                    if (model.Fcode == null || model.Fcode.Trim() == "") {
+                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "统一代码不能为空"});
+                    }
+
+                    if (file_BlicensePic == null) {
+                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "营业执照扫描件不能为空"});
                     } else {
-                        uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier", "idpic");
+                        uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                            "idpic");
                         if (!Directory.Exists(uploadDirectory)) {
                             Directory.CreateDirectory(uploadDirectory);
                         }
                         string _filename = "", filename = "";
-                        string[] imgs = new string[] { ".jpg", ".png", ".gif", ".bmp", ".jpeg" };
+                        string[] imgs = new string[] {".jpg", ".png", ".gif", ".bmp", ".jpeg"};
                         if (!imgs.Contains(System.IO.Path.GetExtension(file_BlicensePic.Name).ToLower())) {
                             Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "身份证扫描文件格式不正确"});
                         }
-                        _filename = model.SupplierId + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file_BlicensePic.Name;
+                        _filename = model.SupplierId + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" +
+                                    file_BlicensePic.Name;
                         filename = Path.Combine(uploadDirectory, _filename);
                         using (FileStream fileStream = new FileStream(filename, FileMode.Create)) {
                             file_BlicensePic.Value.CopyTo(fileStream);
@@ -160,19 +173,13 @@ namespace Bilin3d.Modules {
 
                         model.BlicensePic = _filename;
                     }
-
-                    if (model.CompanyName == null || model.CompanyName.Trim().Length < 2) {
-                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "请正确填写企业名称" });
-                    }
-                    if (model.Capital == null || model.Capital.Trim() == "") {
-                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "注册资本不能为空" });
-                    }
-                    if (model.Fcode == null || model.Fcode.Trim() == "") {
-                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "统一代码不能为空" });
-                    }
                 }
 
                 if (Page.Errors.Count > 0) {
+                    //验证不通过时，删除本次上传的文件以防止冗余
+
+
+                    Model.SupplierModel = model;
                     return View["Add", Model];
                     //return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
