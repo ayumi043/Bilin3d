@@ -223,6 +223,9 @@ namespace Bilin3d.Modules {
                     INSERT INTO t_supplier (
                         SupplierId,
                         Tel,
+                        QQ,
+                        Address,
+                        Logo,
                         IdCard,
                         Fname,
                         IdCardPic1,
@@ -238,6 +241,9 @@ namespace Bilin3d.Modules {
                     )VALUES(
                         '{model.SupplierId}',
                         '{model.Tel}',
+                        '{model.QQ}',
+                        '{model.Address}',
+                        '{model.Logo}',
                         '{model.IdCard}',
                         '{model.Fname}',
                         '{model.IdCardPic1}',
