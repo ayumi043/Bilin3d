@@ -21,6 +21,7 @@ using Nancy.Security;
 using System.IO;
 using System.Threading.Tasks;
 using ServiceStack.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Bilin3d.Modules {
     public class HubModule : BaseModule {
@@ -44,7 +45,7 @@ namespace Bilin3d.Modules {
                     //return null;
                 }
 
-                var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_address");
+                var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_express");
 
                 var supplierModel = new SupplierModel();
                 supplierModel.Ftype = "0";
@@ -207,7 +208,16 @@ namespace Bilin3d.Modules {
                     //return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
-                //通过地址，从百度返回经纬度坐标
+                //通过地址，从百度返回经纬度坐标                
+                string url = $"http://api.map.baidu.com/geocoder/v2/?address={model.Address}&output=json&ak=26904d2efeb684d7d59d493098e7295d";               
+                WebClient wc = new WebClient();
+                wc.Encoding = Encoding.UTF8;
+                string json = wc.DownloadString(url);
+                JObject m = JObject.Parse(json);
+                if (m["status"].ToString() == "0") {
+                    model.Lng = m["result"]["location"]["lng"].ToString(); //经度
+                    model.Lat = m["result"]["location"]["lat"].ToString(); //纬度
+                }
 
 
                 string sql = $@"
@@ -217,27 +227,34 @@ namespace Bilin3d.Modules {
                         IdCard,
                         Fname,
                         IdCardPic1,
+                        IdCardPic2,
                         CompanyName,
                         Capital,
                         Fcode,
                         BlicensePic,
-                        Ftype
+                        Ftype,
+                        Lng,
+                        Lat,
+                        ExpressId
                     )VALUES(
                         '{supplierId}',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6',
-                        '7',
-                        '8',
-                        '9',
-                        '10'
+                        '{model.Tel}',
+                        '{model.IdCard}',
+                        '{model.Fname}',
+                        '{model.IdCardPic1}',
+                        '{model.IdCardPic2}',
+                        '{model.CompanyName}',
+                        '{model.Capital}',
+                        '{model.Fcode}',
+                        '{model.BlicensePic}',
+                        '{model.Ftype}',
+                        '{model.Lng}',
+                        '{model.Lat}',
+                        '{model.ExpressId}'
                         );";
                 db.ExecuteNonQuery(sql);
-
-
-                return View["Add", Model];
+                
+                return View["Success", Model];
             };
 
             Post["/"] = parameters => {

@@ -99,7 +99,7 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label">地址：</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" id="address" name="Address" value="@Model.SupplierModel.Address" placeholder="地址">请认真填写地址，这个会由于距离判断
+                        <input type="text" class="form-control" id="address" name="Address" value="@Model.SupplierModel.Address" placeholder="地址">请认真填写详细地址，通过判断距离，让附近的客户更容易找到你
                     </div>
                 </div>
                 <div class="form-group">
@@ -119,7 +119,7 @@
                     <div class="col-lg-5">
                         <select id="expressid" name="ExpressId">
                             @foreach (var item in Model.Expresses) {
-                                <option value="1" selected="selected">圆通</option>
+                                <option value="@item.ExpressId" @if (item.ExpressId == Model.SupplierModel.ExpressId) {<text>selected="selected"</text>}>@item.Fname</option>
                             }
                         </select>
                     </div>

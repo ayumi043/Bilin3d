@@ -17,7 +17,10 @@ namespace Bilin3d.Models {
 
         [Required(ErrorMessage = "地址不能为空")]
         public string Address { get; set; }
-       
+
+        [Required(ErrorMessage = "物流政策不能为空")]
+        public string ExpressId { get; set; }
+
         public string Logo { get; set; }
 
         //[RequiredIf("Ftype", "0",ErrorMessage = "身份证不能为空")]
@@ -38,6 +41,6 @@ namespace Bilin3d.Models {
         public string Ftype { get; set; }
         public string Lng { get; set; }
         public string Lat { get; set; }
-        public string State { get; set; }
+        public string State { get; set; }             
     }
 }
