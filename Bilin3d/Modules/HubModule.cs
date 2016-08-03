@@ -47,6 +47,7 @@ namespace Bilin3d.Modules {
                 var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_address");
 
                 var supplierModel = new SupplierModel();
+                supplierModel.Ftype = "0";
                 base.Model.SupplierModel = supplierModel;
                 base.Model.Expresses = expresses;
                 return View["Add", Model];
@@ -180,14 +181,32 @@ namespace Bilin3d.Modules {
 
                 if (Page.Errors.Count > 0) {
                     //验证不通过时，删除本次上传的文件以防止冗余
-
+                    if (model.Logo != null) {
+                        System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                            "logo",
+                            model.Logo));
+                    }
+                    if (model.IdCardPic1 != null) {
+                         System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                        "idpic",
+                        model.IdCardPic1));
+                    }
+                    if (model.IdCardPic2 != null) {
+                        System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                        "idpic",
+                        model.IdCardPic2));
+                    }
+                    if (model.BlicensePic != null) {
+                         System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                        "idpic",
+                        model.BlicensePic));
+                    }
 
                     Model.SupplierModel = model;
                     return View["Add", Model];
                     //return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
-                
                 string sql = $@"
                     INSERT INTO t_supplier (
                         SupplierId,
