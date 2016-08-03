@@ -116,9 +116,10 @@
                 <div class="form-group">
                     <label class="col-lg-2 control-label">物流政策：</label>
                     <div class="col-lg-5">
-                        <select id="expressid" name="">
-                            <option value="0">顺丰</option>
-                            <option value="1">圆通</option>
+                        <select id="expressid" name="ExpressId">
+                            @foreach (var item in Model.Expresses) {
+                                <option value="1" selected="selected">圆通</option>
+                            }
                         </select>
                     </div>
                 </div>

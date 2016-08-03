@@ -44,8 +44,11 @@ namespace Bilin3d.Modules {
                     //return null;
                 }
 
+                var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_address");
+
                 var supplierModel = new SupplierModel();
                 base.Model.SupplierModel = supplierModel;
+                base.Model.Expresses = expresses;
                 return View["Add", Model];
             };
 

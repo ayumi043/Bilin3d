@@ -971,6 +971,7 @@
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\CustomAnnotations\RequiredIfAttribute.cs" />
+    <Compile Include="Models\ExpressModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Modules\CarModule.cs" />
