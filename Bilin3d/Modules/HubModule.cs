@@ -207,6 +207,9 @@ namespace Bilin3d.Modules {
                     //return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
                 }
 
+                //通过地址，从百度返回经纬度坐标
+
+
                 string sql = $@"
                     INSERT INTO t_supplier (
                         SupplierId,
