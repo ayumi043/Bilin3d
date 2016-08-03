@@ -20,6 +20,7 @@ namespace Bilin3d.Models {
         public int Expense { get; set; }
         public string Balance { get; set; }
         public int State { get; set; }   // 0.正常、1.停用、2.删除
+        public string SupplierId { get; set; }
         public string EditTime { get; set; }   
         public string CreateTime { get; set; }
     }

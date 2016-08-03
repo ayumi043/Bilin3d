@@ -13,6 +13,7 @@ namespace Bilin3d.Models
         public bool IsAuthenticated { get; set; }
         public string CurrentUser { get; set; }
         public string UserId { get; set; }
+        public bool IsSupplier { get; set; }
         public List<ErrorModel> Errors { get; set; }
     }
 }

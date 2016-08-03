@@ -41,8 +41,7 @@ namespace Bilin3d.Modules {
                     new {id = Page.UserId});
                 //已经是hub了
                 if (!string.IsNullOrEmpty(supplierId)) {
-                    Response.AsRedirect("/hub");
-                    //return null;
+                    return Response.AsRedirect("/hub");                  
                 }
 
                 var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_express");
@@ -237,7 +236,7 @@ namespace Bilin3d.Modules {
                         Lat,
                         ExpressId
                     )VALUES(
-                        '{supplierId}',
+                        '{model.SupplierId}',
                         '{model.Tel}',
                         '{model.IdCard}',
                         '{model.Fname}',
@@ -251,7 +250,9 @@ namespace Bilin3d.Modules {
                         '{model.Lng}',
                         '{model.Lat}',
                         '{model.ExpressId}'
-                        );";
+                        );
+                    UPDATE t_user SET SupplierId='{model.SupplierId}' where id='{Page.UserId}';                       
+                ";
                 db.ExecuteNonQuery(sql);
                 Model.Message = "添加Hub成功!";
                 Model.Url = "/hub";

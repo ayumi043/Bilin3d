@@ -29,19 +29,24 @@ namespace Bilin3d.Modules {
         private void SetupModelDefaults() {
             Before += ctx => {
 
-                var UserId = "";
+                var _UserId = "";
+                var _IsSupplier = false;
                 if (ctx.CurrentUser != null) {
                     var dbFactory = new OrmLiteConnectionFactory(ConfigurationManager.ConnectionStrings["Mysql1"].ToString(), MySqlDialect.Provider);
                     var db = dbFactory.OpenDbConnection();
                     var userRecord = db.Select<UserModel>(q => q.Email == ctx.CurrentUser.UserName).FirstOrDefault();
-                    UserId = userRecord.Id.ToString();
+                    _UserId = userRecord.Id.ToString();
+                    if (userRecord.SupplierId != "") {
+                        _IsSupplier = true;
+                    }
                 }
 
                 Page = new PageModel() {
                     IsAuthenticated = ctx.CurrentUser != null,
                     PreFixTitle = "Bilin 3D - ",
                     CurrentUser = ctx.CurrentUser != null ? ctx.CurrentUser.UserName : "",
-                    UserId = UserId,
+                    UserId = _UserId,
+                    IsSupplier = _IsSupplier,
                     Errors = new List<ErrorModel>()
                 };
 
