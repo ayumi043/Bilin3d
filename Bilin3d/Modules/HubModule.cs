@@ -253,84 +253,9 @@ namespace Bilin3d.Modules {
                         '{model.ExpressId}'
                         );";
                 db.ExecuteNonQuery(sql);
-                
+                Model.Message = "添加Hub成功!";
+                Model.Url = "/hub";
                 return View["Success", Model];
-            };
-
-            Post["/"] = parameters => {
-                string addressid = Request.Form.addressid;
-                string payid = Request.Form.payid;
-                string remark = Request.Form.remark;
-
-                string province = db.Select<string>(@"
-                    select Province from t_address where Id=@addressid", new {addressid = addressid}).FirstOrDefault();
-                if (province == null) {
-                    base.Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "收货地址不能为空"});
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }
-
-                string pay = db.Select<string>(@"
-                    select name from t_pay where Id=@payid", new {payid = payid}).FirstOrDefault();
-                if (pay == null) {
-                    base.Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "支付方式不能为空"});
-                    return Response.AsJson(base.Page.Errors, Nancy.HttpStatusCode.BadRequest);
-                }
-
-                decimal kd = 22;
-                if (province.Contains("福建")) {
-                    kd = 13;
-                }
-
-                string stateId = "1";
-                string orderid = Page.UserId + DateTime.Now.ToString("yyyyMMddhhmmssffff");
-                string sql = string.Format(@"
-                        INSERT INTO t_order (OrderId,UserId, Amount, AddressId, Remark, StateId,EditTime, CreateTime)
-                        SELECT '{0}',UserId, Amount+{2}, '{3}','{4}','{5}',NOW(), NOW()
-                        FROM T_Car
-                        WHERE UserId='{1}';
-
-                        INSERT INTO t_orderdetail (OrderId,FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,EditTime,CreateTime)
-                        SELECT '{0}',FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,NOW(),NOW()
-                        FROM T_CarDetail
-                        WHERE CarId=(SELECT CarId FROM T_Car WHERE UserId='{1}');
-
-                        delete FROM T_CarDetail WHERE CarId=(SELECT CarId FROM T_Car WHERE UserId='{1}');
-                        delete from T_Car WHERE UserId='{1}';
-                    ", orderid, Page.UserId, kd, addressid, remark, stateId);
-                db.ExecuteNonQuery(sql);
-                return Response.AsJson(new {
-                    message = "success"
-                });
-            };
-
-            Get["/{id}"] = parameters => {
-                string id = parameters.id;
-                var order = db.Select<OrderModel>(string.Format(@"
-                    select t1.OrderId,
-                        t1.Express,
-                        t1.CreateTime,
-                        t1.Amount,
-                        t2.Area,
-                        t2.Size,
-                        t2.Volume,
-                        t2.Weight,
-                        t2.FileName,
-                        t2.Num,
-                        t5.name as MatName,
-                        t3.StateName,
-                        t3.Id as StateId,
-                        t4.Consignee,
-                        t4.Address 
-                    from t_order  t1
-                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
-                    left join t_orderstate   t3 on t3.Id=t1.StateId
-                    left join t_address  t4 on t4.Id=t1.AddressId
-                    left join t_material  t5 on t5.MaterialId=t2.MaterialId
-                    where t1.UserId='{0}' and t2.OrderId='{1}'
-                    order by t1.CreateTime desc", Page.UserId, id)).FirstOrDefault();
-                base.Page.Title = "订详明细";
-                base.Model.Order = order;
-                return View["Detail", base.Model];
             };
 
         }
