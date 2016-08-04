@@ -265,6 +265,9 @@ namespace Bilin3d.Modules {
                 return View["Success", Model];
             };
 
+            Get["/printer/add"] = parameters => {
+                return null;
+            };
         }
 
     }

@@ -20,7 +20,7 @@ namespace Bilin3d.Modules {
             Before += ctx => {
                 if (Session["adminid"] == null) {
                     //return null;
-                    return Response.AsRedirect("/bilinadminlogin");
+                    //return Response.AsRedirect("/bilinadminlogin");
                 }
                 return null;
             };
@@ -29,7 +29,24 @@ namespace Bilin3d.Modules {
                 var users = db.Select<UserModel>("select * from T_User");
                 base.Page.Title = "Home";
 
-                return View["Admin/Index", base.Model];
+                return View["Admin/Index", Model];
+            };
+
+            Get["/printer"] = parameters => {
+                Page.Title = "打印机";
+                return View["Admin/Printer/Index", Model];
+            };
+
+            Post["/printer"] = parameters => {
+                return null;
+            };
+
+            Get["/printer/brand"] = parameters => {
+                return null;
+            };
+
+            Post["/printer/brand"] = parameters => {
+                return null;
             };
 
             Get["/order"] = parameters => {               
