@@ -7,10 +7,32 @@
     Layout = "_Layout.cshtml";
 }
 
-@section Javascript{
+@section Css{
+    <link href="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.css" rel="stylesheet">    
+}
+
+@section Javascript{   
+    <script src="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <script src="/hub/printer.js"></script>
     <script>
-        $(function () {
-                     
+        $(function () {            
+            $("#printer").autocomplete({
+                minLength: 0,
+                source: printers,
+                focus: function (event, ui) {
+                    $("#printer").val(ui.item.label);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $("#printerid").val(ui.item.value);
+                    $("#printer").val(ui.item.label);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>")
+                  .append("<div>" + item.label + "</div>")
+                  .appendTo(ul);
+            };
         });
     </script>
 }
@@ -60,12 +82,13 @@
                 <h3 class="panel-title"><i class="fa fa-tasks"></i> Hub首页</h3>
             </div>
             <div class="panel-body">
-                <h4>Accusamus et iusto odio</h4>
-                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+                <h4>添加打印机</h4>
+                <input type="hidden" id="printerid" name="PrinterId" value="" />
+                <input type="type" id="printer" name="Fname" value="" placeholder="打印机名称" />
+                <a href="/">找不到打印机？请告诉我们？</a>
             </div>
         </div>
-        <!-- End Grey Panel with Equal Height -->
-        
+        <!-- End Grey Panel with Equal Height -->        
 
         <div class="margin-bottom-40"></div>
 

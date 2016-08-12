@@ -265,6 +265,25 @@ namespace Bilin3d.Modules {
                 return View["Success", Model];
             };
 
+            Get["/edit"] = parameters => {
+                return "123";
+            };
+
+            Post["/edit"] = parameters => {
+                return null;
+            };
+
+            Get["/printer.js"] = parameters => {
+                string str = "var printers = [";
+                var printers = db.Select<PrinterModel>("SELECT PrinterId,Fname FROM t_printer WHERE State='0'");
+                printers.ForEach(i => {
+                    str = str + $@"{{value:'{i.PrinterId}',label:'{i.Fname}'}},";
+                    //str = str + $@"'{i.Fname}',";
+                });
+                str = str.TrimEnd(',') + "];";
+                return Response.AsText(str);
+            };
+
             Get["/printer"] = parameters => {
                 return View["Print", Model];
             };
