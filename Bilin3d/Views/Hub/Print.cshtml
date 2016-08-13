@@ -33,6 +33,31 @@
                   .append("<div>" + item.label + "</div>")
                   .appendTo(ul);
             };
+
+            $("#addprinter").click(function () {
+                $.ajax({
+                    url: '/car',
+                    data: $("form").serialize(),
+                    type: 'POST',
+                    success: function (data) {
+                        window.location = "/car/checkout";
+                        return;
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            //alert("失败了");
+                        }
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        //alert(str);
+                        $("#error").show();
+                        $("#errormessage").html(str);
+                        $('body').animate({ scrollTop: 0 }, 500);
+                    }
+                });
+            });
         });
     </script>
 }
@@ -83,9 +108,10 @@
             </div>
             <div class="panel-body">
                 <h4>添加打印机</h4>
-                <input type="hidden" id="printerid" name="PrinterId" value="" />
-                <input type="type" id="printer" name="Fname" value="" placeholder="打印机名称" />
-                <a href="/">找不到打印机？请告诉我们？</a>
+                <input type="hidden" id="printerid" value="" />
+                <input type="text" id="printer" value="" style="height:34px;width:580px;padding-left:6px;" placeholder="打印机名称" />
+                <button type="button" id="addprinter" class="btn-u" style="font-size:14px;" disabled="disabled">添加</button>
+                <a href="/">找不到打印机？请告诉我们!</a>
             </div>
         </div>
         <!-- End Grey Panel with Equal Height -->        

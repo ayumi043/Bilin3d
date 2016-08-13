@@ -277,8 +277,7 @@ namespace Bilin3d.Modules {
                 string str = "var printers = [";
                 var printers = db.Select<PrinterModel>("SELECT PrinterId,Fname FROM t_printer WHERE State='0'");
                 printers.ForEach(i => {
-                    str = str + $@"{{value:'{i.PrinterId}',label:'{i.Fname}'}},";
-                    //str = str + $@"'{i.Fname}',";
+                    str = str + $@"{{value:'{i.PrinterId}',label:'{i.Fname}'}},";                  
                 });
                 str = str.TrimEnd(',') + "];";
                 return Response.AsText(str);
@@ -286,6 +285,12 @@ namespace Bilin3d.Modules {
 
             Get["/printer"] = parameters => {
                 return View["Print", Model];
+            };
+
+            Post["/printer/add"] = parameters => {
+                string printerid = Request.Form.printerid;
+                string sql = $@"";
+                return null;
             };
         }
 
