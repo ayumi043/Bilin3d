@@ -875,6 +875,7 @@
     <Content Include="assets\css\pages\page_log_reg_v1.css" />
     <Content Include="assets\css\pages\profile.css" />
     <Content Include="assets\css\plugins.css" />
+    <Content Include="assets\css\plugins\sky-forms.css" />
     <Content Include="assets\css\plugins\style-switcher.css" />
     <Content Include="assets\css\style.css" />
     <Content Include="assets\css\theme-colors\default.css" />
@@ -969,6 +970,7 @@
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\Material.cs" />
     <Compile Include="Models\PageModel.cs" />
+    <Compile Include="Models\SupplierPrinterModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\CustomAnnotations\RequiredIfAttribute.cs" />
     <Compile Include="Models\ExpressModel.cs" />

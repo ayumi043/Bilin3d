@@ -38,10 +38,10 @@ namespace Bilin3d.Modules {
             Get["/add"] = parameters => {
                 Page.Title = "成为HUB";
                 var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
-                    new {id = Page.UserId});
+                    new { id = Page.UserId });
                 //已经是hub了
                 if (!string.IsNullOrEmpty(supplierId)) {
-                    return Response.AsRedirect("/hub");                  
+                    return Response.AsRedirect("/hub");
                 }
 
                 var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_express");
@@ -55,7 +55,7 @@ namespace Bilin3d.Modules {
 
             Post["/add"] = parameters => {
                 var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
-                    new {id = Page.UserId});
+                    new { id = Page.UserId });
                 //已经是hub了
                 if (!string.IsNullOrEmpty(supplierId)) {
                     throw new Exception("已经是hub(供应商)了");
@@ -67,13 +67,13 @@ namespace Bilin3d.Modules {
                 if (!result.IsValid) {
                     foreach (var item in result.Errors) {
                         foreach (var member in item.Value) {
-                            base.Page.Errors.Add(new ErrorModel() {Name = item.Key, ErrorMessage = member.ErrorMessage});
+                            base.Page.Errors.Add(new ErrorModel() { Name = item.Key, ErrorMessage = member.ErrorMessage });
                         }
                     }
                 }
 
                 var files = Request.Files;
-                HttpFile file_Logo = null, file_IdCarPic1 = null, file_IdCarPic2 = null,file_BlicensePic = null;
+                HttpFile file_Logo = null, file_IdCarPic1 = null, file_IdCarPic2 = null, file_BlicensePic = null;
                 foreach (var file in files) {
                     if (file.Key == "Logo") file_Logo = file;
                     if (file.Key == "IdCarPic1") file_IdCarPic1 = file;
@@ -82,11 +82,11 @@ namespace Bilin3d.Modules {
                 }
 
                 string uploadDirectory;
-                
+
                 if (file_Logo == null) {
-                    Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "Logo不能为空"});
+                    Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "Logo不能为空" });
                 } else {
-                    uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier","logo");
+                    uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier", "logo");
                     if (!Directory.Exists(uploadDirectory)) {
                         Directory.CreateDirectory(uploadDirectory);
                     }
@@ -112,7 +112,7 @@ namespace Bilin3d.Modules {
                     }
 
                     if (file_IdCarPic1 == null || file_IdCarPic2 == null) {
-                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "身份证扫描不能为空"});
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "身份证扫描不能为空" });
                     } else {
                         uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier", "idpic");
                         if (!Directory.Exists(uploadDirectory)) {
@@ -146,17 +146,17 @@ namespace Bilin3d.Modules {
                 //企业
                 if (model.Ftype == "1") {
                     if (model.CompanyName == null || model.CompanyName.Trim().Length < 2) {
-                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "请正确填写企业名称"});
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "请正确填写企业名称" });
                     }
                     if (model.Capital == null || model.Capital.Trim() == "") {
-                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "注册资本不能为空"});
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "注册资本不能为空" });
                     }
                     if (model.Fcode == null || model.Fcode.Trim() == "") {
-                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "统一代码不能为空"});
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "统一代码不能为空" });
                     }
 
                     if (file_BlicensePic == null) {
-                        Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "营业执照扫描件不能为空"});
+                        Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "营业执照扫描件不能为空" });
                     } else {
                         uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
                             "idpic");
@@ -164,9 +164,9 @@ namespace Bilin3d.Modules {
                             Directory.CreateDirectory(uploadDirectory);
                         }
                         string _filename = "", filename = "";
-                        string[] imgs = new string[] {".jpg", ".png", ".gif", ".bmp", ".jpeg"};
+                        string[] imgs = new string[] { ".jpg", ".png", ".gif", ".bmp", ".jpeg" };
                         if (!imgs.Contains(System.IO.Path.GetExtension(file_BlicensePic.Name).ToLower())) {
-                            Page.Errors.Add(new ErrorModel() {Name = "", ErrorMessage = "身份证扫描文件格式不正确"});
+                            Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "身份证扫描文件格式不正确" });
                         }
                         _filename = model.SupplierId + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" +
                                     file_BlicensePic.Name;
@@ -187,9 +187,9 @@ namespace Bilin3d.Modules {
                             model.Logo));
                     }
                     if (model.IdCardPic1 != null) {
-                         System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
-                        "idpic",
-                        model.IdCardPic1));
+                        System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                       "idpic",
+                       model.IdCardPic1));
                     }
                     if (model.IdCardPic2 != null) {
                         System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
@@ -197,9 +197,9 @@ namespace Bilin3d.Modules {
                         model.IdCardPic2));
                     }
                     if (model.BlicensePic != null) {
-                         System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
-                        "idpic",
-                        model.BlicensePic));
+                        System.IO.File.Delete(Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "supplier",
+                       "idpic",
+                       model.BlicensePic));
                     }
 
                     Model.SupplierModel = model;
@@ -208,7 +208,7 @@ namespace Bilin3d.Modules {
                 }
 
                 //通过地址，从百度返回经纬度坐标                
-                string url = $"http://api.map.baidu.com/geocoder/v2/?address={model.Address}&output=json&ak=26904d2efeb684d7d59d493098e7295d";               
+                string url = $"http://api.map.baidu.com/geocoder/v2/?address={model.Address}&output=json&ak=26904d2efeb684d7d59d493098e7295d";
                 WebClient wc = new WebClient();
                 wc.Encoding = Encoding.UTF8;
                 string json = wc.DownloadString(url);
@@ -277,7 +277,7 @@ namespace Bilin3d.Modules {
                 string str = "var printers = [";
                 var printers = db.Select<PrinterModel>("SELECT PrinterId,Fname FROM t_printer WHERE State='0'");
                 printers.ForEach(i => {
-                    str = str + $@"{{value:'{i.PrinterId}',label:'{i.Fname}'}},";                  
+                    str = str + $@"{{value:'{i.PrinterId}',label:'{i.Fname}'}},";
                 });
                 str = str.TrimEnd(',') + "];";
                 return Response.AsText(str);
@@ -287,9 +287,30 @@ namespace Bilin3d.Modules {
                 return View["Print", Model];
             };
 
+            Get["/printer/list"] = parameters => {
+                string sql = $@"
+                    select t1.id,t2.fname 
+                    from t_supplier_printer t1
+                    left join t_printer t2 on t2.printerid=t1.printerid
+                    where t1.state='0' and t2.state='0'
+                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
+                var printers = db.Select<SupplierPrinterModel>(sql);
+                return Response.AsJson(printers, Nancy.HttpStatusCode.OK);
+            };
+
             Post["/printer/add"] = parameters => {
                 string printerid = Request.Form.printerid;
-                string sql = $@"";
+                string sql = $@"select count(1) 
+                                from t_supplier_printer 
+                                where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
+                var count = db.Scalar<int>(sql);
+                if (count > 0) {
+                    return Response.AsJson(new { message = "打印机已存在!" }, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                sql = $@"INSERT INTO t_supplier_printer (ID,SupplierId,PrinterId)
+                                    VALUES('{Guid.NewGuid().ToString("N")}',(select SupplierId from t_user where id='{Page.UserId}'),'{printerid}');";
+                db.ExecuteNonQuery(sql);
                 return null;
             };
         }
