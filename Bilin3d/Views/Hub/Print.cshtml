@@ -39,7 +39,7 @@
         }
 
         #printerlist .id{display:none;}
-        #printerlist .fname{font-size:20px;font-weight:bold;}
+        #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;}
     </style>
 }
 
@@ -74,7 +74,7 @@
                     success: function (data) {
                         var str = "";
                         $.each(data, function (index, item) {
-                            str += "<p>" + "<span class='fname'>" + item["fname"] + "</span>" + "<span class='id'>" + item["iD"] + "</span>" + "<i class='rounded-4x'></i>" +"</p>";
+                            str += "<div>" + "<span class='fname'>" + item["fname"] + "</span>" + "<span class='id'>" + item["iD"] + "</span>" + "<i class='rounded-4x'></i>" +"</div>";
                         });
                         $("#printerlist").html(str);
                     },
@@ -101,6 +101,11 @@
                     }
                 });
             });
+
+            $(document).on("click", ".fname", function () {
+                alert(1);
+            });
+
         });
     </script>
 }
