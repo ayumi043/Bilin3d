@@ -313,7 +313,55 @@ namespace Bilin3d.Modules {
                 db.ExecuteNonQuery(sql);
                 return null;
             };
-        }
 
+            Post["/material.js"] = parameters => {
+                string str = "var materials = [";
+                var materials = db.Select<Material>("SELECT * FROM t_material WHERE State='0'");
+                materials.ForEach(i => {
+                    str = str + $@"{{value:'{i.MaterialId}',label:'{i.Name}'}},";
+                });
+                str = str.TrimEnd(',') + "];";
+                return Response.AsText(str);
+            };
+
+            Post["/printer/material/add"] = parameters => {
+                string printerid = Request.Form.printerid;
+                string materialid = Request.Form.materialid;
+                string completeid = Request.Form.completeid;
+                string accuracyid = Request.Form.accuracyid;
+                string price = Request.Form.price;
+                string sql = $@"select count(1) 
+                    from t_supplier_printer_material
+                    where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') 
+                        and  PrinterId='{printerid}'
+                        and  MaterialId='{materialid}';";
+                var count = db.Scalar<int>(sql);
+                if (count > 0) {
+                    return Response.AsJson(new { message = "材料已存在!" }, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                sql = $@"
+                        INSERT INTO t_supplier_printer_material (
+                            ID,
+                            SupplierId,
+                            PrinterId,
+                            MaterialId,
+                            CompleteId,
+                            AccuracyId,
+                            Price)
+                        VALUES(
+                            '{Guid.NewGuid().ToString("N")}',
+                            (select SupplierId from t_user where id='{Page.UserId}'),
+                            '{printerid}',
+                            '{materialid}',
+                            '{completeid}',
+                            '{accuracyid}',
+                            '{price}'
+                        );";
+                db.ExecuteNonQuery(sql);
+                return null;
+            };
+
+        }
     }
 }
