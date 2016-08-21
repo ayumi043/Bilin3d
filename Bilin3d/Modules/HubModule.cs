@@ -314,7 +314,7 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
-            Post["/material.js"] = parameters => {
+            Get["/material.js"] = parameters => {
                 string str = "var materials = [";
                 var materials = db.Select<Material>("SELECT * FROM t_material WHERE State='0'");
                 materials.ForEach(i => {

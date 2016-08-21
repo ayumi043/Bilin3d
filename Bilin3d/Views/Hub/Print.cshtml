@@ -9,9 +9,9 @@
 
 @section Css{
     <link href="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.css" rel="stylesheet">    
-    <style>
+    <style>        
         .content {
-            padding-top: 20px;
+            padding-top: 20px;           
         }
 
         .list-group > li.active, .list-group > li.active:hover {
@@ -74,7 +74,19 @@
                     success: function (data) {
                         var str = "";
                         $.each(data, function (index, item) {
-                            str += "<div>" + "<span class='fname'>" + item["fname"] + "</span>" + "<span class='id'>" + item["iD"] + "</span>" + "<i class='rounded-4x'></i>" +"</div>";
+                            str += "<div class='panel panel-grey equal-height-column'>"
+                                        + "<div class='panel-heading'>"
+                                        + "   <h3 class='panel-title fname'>" + item["fname"] + "<span class='id'>" + item["iD"] + "</span></h3>"
+                                        + "</div>"
+                                        + "<div class='panel-body'>"
+                                        + "   <h4>打印材料</h4>"
+                                        + "   <h6>添加打印材料</h6>"
+                                        + "   <input type='hidden' class='matirialid' value='' />"
+                                        + "   <input type='text' class='material' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
+                                        + "   <button type='button' class='btn btn-u addmaterial' style='font-size:14px;' disabled='disabled'>添加材料</button>"
+                                        + "   <a href=''>找不到材料？请告诉我们!</a>"
+                                        + "</div>"
+                                  + "</div>";
                         });
                         $("#printerlist").html(str);
                     },
@@ -117,25 +129,31 @@
     
     <!-- Begin Content -->
     <div class="col-md-9">
-        <div><h2>打印机和价格</h2></div>
-        <!-- Grey Panel with Equal Height -->
-        <div class="panel panel-grey equal-height-column">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tasks"></i> Hub首页</h3>
-            </div>
-            <div class="panel-body">
-                <h4>我的打印机</h4>
-                <div id="printerlist"></div>
-            </div>
-            <div class="panel-body">
-                <h4>添加打印机</h4>
-                <input type="hidden" id="printerid" value="" />
-                <input type="text" id="printer" value="" style="height:34px;width:550px;padding-left:6px;" placeholder="打印机名称" />
-                <button type="button" id="addprinter" class="btn btn-u" style="font-size:14px;" disabled="disabled">添加打印机</button>
-                <a href="/">找不到打印机？请告诉我们!</a>
+        <div><h2>打印机</h2></div>
+        
+        <div id="printerlist">
+            <div class="panel panel-grey equal-height-column">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Hub首页</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>打印材料</h4>
+                    <h4>添加打印机</h4>
+                    <input type="hidden" class="matirialid" value="" />
+                    <input type="text" class="material" value="" style="height:34px;width:550px;padding-left:6px;" placeholder="打印材料名称" />
+                    <button type="button" class="btn btn-u addmaterial" style="font-size:14px;" disabled="disabled">添加材料</button>
+                    <a href="/">找不到材料？请告诉我们!</a>
+                </div>
             </div>
         </div>
-        <!-- End Grey Panel with Equal Height -->        
+
+        <div class="panel-body">
+            <h4>添加打印机</h4>
+            <input type="hidden" id="printerid" value="" />
+            <input type="text" id="printer" value="" style="height:34px;width:550px;padding-left:6px;" placeholder="打印机名称" />
+            <button type="button" id="addprinter" class="btn btn-u" style="font-size:14px;" disabled="disabled">添加打印机</button>
+            <a href="/">找不到打印机？请告诉我们!</a>
+        </div>
 
         <div class="margin-bottom-40"></div>
 
