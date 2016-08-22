@@ -976,6 +976,7 @@
     <Compile Include="Models\ExpressModel.cs" />
     <Compile Include="Models\PrinterModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
+    <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Modules\CarModule.cs" />
     <Compile Include="Modules\HubModule.cs" />

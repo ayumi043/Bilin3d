@@ -20,12 +20,13 @@ using System.Text.RegularExpressions;
 using Nancy.Security;
 using System.IO;
 using Yiauo.Three;
+using Newtonsoft.Json.Linq;
 
 namespace Bilin3d.Modules {
     public class PrintModule : BaseModule {
-        public PrintModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
+        public PrintModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) : base("/print") {
 
-            Get["/print"] = parameters => {
+            Get["/"] = parameters => {
                 base.Page.Title = "3D打印";
                 var materials = db.Select<Material>(q => q.State == 0);
                 base.Model.Materials = materials;
@@ -33,7 +34,7 @@ namespace Bilin3d.Modules {
                 return View["Index", base.Model];
             };
 
-            Post["/print/upload"] = parameters => {
+            Post["/upload"] = parameters => {
                 string uploadDirectory;
                 string filepath = "";
                 if (Context.CurrentUser == null) {
@@ -114,7 +115,39 @@ namespace Bilin3d.Modules {
                 //base.Page.Title = "上传成功";
                 //return View["Index", base.Model];
             };
-                   
+
+            Get["/suppliers/{distance}"] = parameters => {
+                string distance = parameters.distance;   
+                double lng = 0, lat = 0;
+
+                string url = $"http://api.map.baidu.com/location/ip?ak=26904d2efeb684d7d59d493098e7295d&ip={Request.UserHostAddress}&coor=bd09ll";
+                WebClient wc = new WebClient();
+                wc.Encoding = Encoding.UTF8;
+                string json = wc.DownloadString(url);
+                JObject m = JObject.Parse(json);
+                if (m["status"].ToString() == "0") {
+                    lng = double.Parse(m["point"]["x"].ToString()); //经度
+                    lat = double.Parse(m["point"]["y"].ToString()); //纬度
+                }
+
+                double range = 180 / Math.PI * 1 / 6372.797; //里面的 1 就代表搜索 1km 之内，单位km
+                double lngR = range / Math.Cos(lat * Math.PI / 180.0);
+                double maxLat = lat + range;
+                double minLat = lat - range;
+                double maxLng = lng + lngR;
+                double minLng = lng - lngR;
+                string sql = $"SELECT supplierId,fname,address,tel,qq,logo FROM t_supplier WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'));";
+                var suppliers = db.Select<SupplierModel>(sql);
+                return Response.AsJson(suppliers.Select(i => new {
+                    supplierId = i.SupplierId,
+                    fname = i.Fname,
+                    address = i.Address,
+                    tel = i.Tel,
+                    qq = i.QQ,
+                    logo = i.Logo
+                }));
+            };
+
         }
 
     }
