@@ -18,11 +18,11 @@
             background: none;
         }
 
-            .list-group > li > a:hover,
-            .list-group > li.active > a {
-                color: #72c02c !important;
-                font-weight: bold;
-            }
+        .list-group > li > a:hover,
+        .list-group > li.active > a {
+            color: #72c02c !important;
+            font-weight: bold;
+        }
 
         .list-group li a {
             color: #666;
@@ -40,12 +40,14 @@
 
         #printerlist .id{display:none;}
         #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;}
+        .pbody{display:none;}
     </style>
 }
 
 @section Javascript{   
     <script src="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script src="/hub/printer.js"></script>
+    <script src="/hub/material.js"></script>
     <script>
         $(function () {            
             $("#printer").autocomplete({
@@ -66,6 +68,27 @@
                   .append("<div>" + item.label + "</div>")
                   .appendTo(ul);
             };
+          
+            $(document).on('focus', ".materialtxt", function () {
+                $(this).autocomplete({
+                    minLength: 0,
+                    source: materials,
+                    focus: function (event, ui) {
+                        $(this).val(ui.item.label);
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        $(this).prev(".materialid").val(ui.item.value);
+                        $(this).val(ui.item.label);
+                        $(this).next(".addmaterial").removeAttr("disabled");
+                        return false;
+                    }
+                }).autocomplete("instance")._renderItem = function (ul, item) {
+                    return $("<li>")
+                      .append("<div>" + item.label + "</div>")
+                      .appendTo(ul);
+                };
+            });                     
 
             var GetPrinters = function () {
                 $.ajax({
@@ -78,11 +101,12 @@
                                         + "<div class='panel-heading'>"
                                         + "   <h3 class='panel-title fname'>" + item["fname"] + "<span class='id'>" + item["iD"] + "</span></h3>"
                                         + "</div>"
-                                        + "<div class='panel-body'>"
+                                        + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
+                                        + "   <ul class='material-list'></ul>"
                                         + "   <h6>添加打印材料</h6>"
-                                        + "   <input type='hidden' class='matirialid' value='' />"
-                                        + "   <input type='text' class='material' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
+                                        + "   <input type='hidden' class='materialid' value='' />"
+                                        + "   <input type='text' class='materialtxt' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
                                         + "   <button type='button' class='btn btn-u addmaterial' style='font-size:14px;' disabled='disabled'>添加材料</button>"
                                         + "   <a href=''>找不到材料？请告诉我们!</a>"
                                         + "</div>"
@@ -115,7 +139,26 @@
             });
 
             $(document).on("click", ".fname", function () {
-                alert(1);
+                $(this).parent().next(".pbody").toggle();
+            });
+
+            $(document).on("click", ".addmaterial", function () {              
+                var materialid = $(this).prevAll(".materialid").val();
+                alert(materialid);
+                return;
+                $.ajax({
+                    url: '/hub/printer/add',
+                    data: { printerid: printerid },
+                    type: 'POST',
+                    success: function (data) {
+                        GetPrinters();
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert(data.responseJSON.message);
+                        }
+                    }
+                });
             });
 
         });
@@ -132,19 +175,7 @@
         <div><h2>打印机</h2></div>
         
         <div id="printerlist">
-            <div class="panel panel-grey equal-height-column">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Hub首页</h3>
-                </div>
-                <div class="panel-body">
-                    <h4>打印材料</h4>
-                    <h4>添加打印机</h4>
-                    <input type="hidden" class="matirialid" value="" />
-                    <input type="text" class="material" value="" style="height:34px;width:550px;padding-left:6px;" placeholder="打印材料名称" />
-                    <button type="button" class="btn btn-u addmaterial" style="font-size:14px;" disabled="disabled">添加材料</button>
-                    <a href="/">找不到材料？请告诉我们!</a>
-                </div>
-            </div>
+            
         </div>
 
         <div class="panel-body">

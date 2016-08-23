@@ -362,6 +362,14 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
+            Get["/blance"] = parameters => {
+                return Response.AsText("账户余额", "text/html; charset=utf-8");
+            };
+
+            Get["/withdraw"] = parameters => {
+                return Response.AsText("取现", "text/html; charset=utf-8");                
+            };
+
         }
     }
 }
