@@ -92,7 +92,7 @@
 
             var GetPrinters = function () {
                 $.ajax({
-                    url: '/hub/printer/list',
+                    url: '/hub/printer/material/list',
                     type: 'GET',
                     success: function (data) {
                         var str = "";
@@ -145,13 +145,20 @@
             $(document).on("click", ".addmaterial", function () {              
                 var materialid = $(this).prevAll(".materialid").val();
                 alert(materialid);
-                return;
+                //return;
                 $.ajax({
-                    url: '/hub/printer/add',
-                    data: { printerid: printerid },
+                    url: '/hub/printer/material/add',
+                    data: {
+                        printerid: printerid,
+                        materialid: materialid,
+                        completeid: completeid,
+                        accuracyid: accuracyid,
+                        price: price
+                    },
                     type: 'POST',
                     success: function (data) {
-                        GetPrinters();
+                        alert("添加成功!");
+                        //GetPrinters();
                     },
                     error: function (data) {
                         if (data.status == "400") {
@@ -174,8 +181,7 @@
     <div class="col-md-9">
         <div><h2>打印机</h2></div>
         
-        <div id="printerlist">
-            
+        <div id="printerlist">            
         </div>
 
         <div class="panel-body">
