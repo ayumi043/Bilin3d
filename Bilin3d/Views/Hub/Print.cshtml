@@ -38,7 +38,7 @@
             background: inherit !important;
         }
 
-        #printerlist .id{display:none;}
+        #printerlist .printerid{display:none;}
         #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;}
         .pbody{display:none;}
     </style>
@@ -49,7 +49,7 @@
     <script src="/hub/printer.js"></script>
     <script src="/hub/material.js"></script>
     <script>
-        $(function () {            
+        $(function () {
             $("#printer").autocomplete({
                 minLength: 0,
                 source: printers,
@@ -68,7 +68,7 @@
                   .append("<div>" + item.label + "</div>")
                   .appendTo(ul);
             };
-          
+
             $(document).on('focus', ".materialtxt", function () {
                 $(this).autocomplete({
                     minLength: 0,
@@ -80,7 +80,7 @@
                     select: function (event, ui) {
                         $(this).prev(".materialid").val(ui.item.value);
                         $(this).val(ui.item.label);
-                        $(this).next(".addmaterial").removeAttr("disabled");
+                        $(this).next(".selectmaterial").removeAttr("disabled");
                         return false;
                     }
                 }).autocomplete("instance")._renderItem = function (ul, item) {
@@ -88,7 +88,7 @@
                       .append("<div>" + item.label + "</div>")
                       .appendTo(ul);
                 };
-            });                     
+            });
 
             var GetPrinters = function () {
                 $.ajax({
@@ -99,15 +99,16 @@
                         $.each(data, function (index, item) {
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["fname"] + "<span class='id'>" + item["iD"] + "</span></h3>"
+                                        + "   <h3 class='panel-title fname'>" + item["fname"] + "<span class='printerid'>" + item["iD"] + "</span></h3>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
-                                        + "   <ul class='material-list'></ul>"
+                                        + "   <div class='material-list'></div>"
+                                        + "   <div class='pre-material'></div>"
                                         + "   <h6>添加打印材料</h6>"
                                         + "   <input type='hidden' class='materialid' value='' />"
                                         + "   <input type='text' class='materialtxt' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
-                                        + "   <button type='button' class='btn btn-u addmaterial' style='font-size:14px;' disabled='disabled'>添加材料</button>"
+                                        + "   <button type='button' class='btn btn-u selectmaterial' printerid='" + item["iD"]  + "' style='font-size:14px;' disabled='disabled'>确定选择</button>"
                                         + "   <a href=''>找不到材料？请告诉我们!</a>"
                                         + "</div>"
                                   + "</div>";
@@ -122,43 +123,13 @@
             GetPrinters();
 
             $("#addprinter").click(function () {
-                var printerid =$("#printerid").val();
+                var printerid = $("#printerid").val();
                 $.ajax({
                     url: '/hub/printer/add',
-                    data: { printerid : printerid},
+                    data: { printerid: printerid },
                     type: 'POST',
                     success: function (data) {
                         GetPrinters();
-                    },
-                    error: function (data) {
-                        if (data.status == "400") {
-                            alert(data.responseJSON.message);
-                        }                       
-                    }
-                });
-            });
-
-            $(document).on("click", ".fname", function () {
-                $(this).parent().next(".pbody").toggle();
-            });
-
-            $(document).on("click", ".addmaterial", function () {              
-                var materialid = $(this).prevAll(".materialid").val();
-                alert(materialid);
-                //return;
-                $.ajax({
-                    url: '/hub/printer/material/add',
-                    data: {
-                        printerid: printerid,
-                        materialid: materialid,
-                        completeid: completeid,
-                        accuracyid: accuracyid,
-                        price: price
-                    },
-                    type: 'POST',
-                    success: function (data) {
-                        alert("添加成功!");
-                        //GetPrinters();
                     },
                     error: function (data) {
                         if (data.status == "400") {
@@ -167,6 +138,82 @@
                     }
                 });
             });
+
+            $(document).on("click", ".fname", function () {
+                $(this).parent().next(".pbody").toggle();
+            });
+                       
+            
+            var accuracyOpt = "@Html.Raw(Model.accuracyOpt)";
+            var completeOpt = "@Html.Raw(Model.completeOpt)";
+            $(document).on("click", ".selectmaterial", function () {
+                var $this = $(this);
+                var printerid = $this.attr("printerid");             
+                var materialid = $this.prevAll(".materialid").val();
+                $this.attr("disabled", "disabled");
+                var materialtxt = $this.prevAll(".materialtxt").val();
+                $this.prevAll(".materialtxt").val("");
+                $this.prevAll(".materialid").val("");
+
+                $.get("/hub/material/" + materialid, function (result) {
+                    var str = "<h2>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + materialtxt + "</span></h2>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>精度：" + accuracyOpt + "</span>"
+                        + "  <span style='padding-left:22px;'>完成周期：" + completeOpt + "</span>"
+                        + "</div>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>密度：" + result.density + "(克/立方厘米)</span>"
+                        + "  <span style='padding-left:22px;'>颜色：" + result.color + "</span>"
+                        + "</div>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>价格￥：<input type='text' class='mat-price' value='" + result.price + "' /></span>"
+                        + "</div>"
+                        + "<div style='margin:0px 0px 0px 32px;'><button type='button' printerid='" + printerid  + "' materialid='" + materialid + "' class='btn btn-u addmaterial' style='font-size:12px;'>添加材料</button></div>"
+                        + "<hr>";
+                    $this.prevAll(".pre-material").html(str);
+                });
+            });
+
+            $(document).on("click", ".addmaterial", function () {
+                var info = $(this).parents(".pre-material");              
+                var materialid = $(this).attr("materialid");
+                var printerid = $(this).attr("printerid");
+                var accuracyid = info.find(".accuracyOpt").val();
+                var completeid = info.find(".completeOpt").val();
+                var price = info.find(".mat-price").val();
+                if (!(/^([-]){0,1}([0-9]){1,}([.]){0,1}([0-9]){0,}$/).test(price)) {
+                    alert("请正确填写价格");
+                    return;
+                }
+
+                if (materialid && printerid && accuracyid && completeid) {
+                    $.ajax({
+                        url: '/hub/printer/material/add',
+                        data: {
+                            printerid: printerid,
+                            materialid: materialid,
+                            completeid: completeid,
+                            accuracyid: accuracyid,
+                            price: price
+                        },
+                        type: 'POST',
+                        success: function (data) {
+                            alert("添加成功!");
+                            //GetPrinters();
+                        },
+                        error: function (data) {
+                            if (data.status == "400") {
+                                alert(data.responseJSON.message);
+                            }
+                        }
+                    });
+                } else {
+                    alert("请正确填写信息");
+                    return;
+                }               
+
+            });
+
 
         });
     </script>

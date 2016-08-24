@@ -284,12 +284,31 @@ namespace Bilin3d.Modules {
             };
 
             Get["/printer"] = parameters => {
+                string sql = "select AccuracyId,Fname from t_printaccuracy;";
+                var printerAccuracys = db.Select<PrinterAccuracyModel>(sql);
+                sql = "select CompleteId,Fname from t_printcomplete;";
+                var printerCompletes = db.Select<PrinterCompleteModel>(sql);               
+
+                var accuracyOpt = "<select class='accuracyOpt'>";
+                foreach (var item in printerAccuracys) {
+                    accuracyOpt += "<option value='" + item.AccuracyId + "'>" + item.Fname + "</option>";
+                }
+                accuracyOpt += "</select>";
+
+                var completeOpt = "<select class='completeOpt'>";
+                foreach (var item in printerCompletes) {
+                    completeOpt += "<option value='" + item.CompleteId + "'>" + item.Fname + "</option>";
+                }
+                completeOpt += "</select>";
+
+                Model.accuracyOpt = accuracyOpt;
+                Model.completeOpt = completeOpt;
                 return View["Print", Model];
             };
 
             Get["/printer/material/list"] = parameters => {
                 string sql = $@"
-                    select t1.id,t2.fname 
+                    select t1.id,t2.fname, t4.MaterialId,t4.Name
                     from t_supplier_printer t1
                     left join t_printer t2 on t2.printerid=t1.printerid
                     left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId
@@ -326,6 +345,12 @@ namespace Bilin3d.Modules {
                 return Response.AsText(str);
             };
 
+            Get["/material/{id}"] = parameters => {
+                var materialId = parameters.id;
+                var material = db.Single<Material>("select * from t_material where MaterialId=@MaterialId", new { MaterialId = materialId });
+                return Response.AsJson(material);                
+            };
+            
             Post["/printer/material/add"] = parameters => {
                 string printerid = Request.Form.printerid;
                 string materialid = Request.Form.materialid;
