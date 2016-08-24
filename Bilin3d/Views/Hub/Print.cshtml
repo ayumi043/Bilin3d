@@ -156,7 +156,7 @@
                 $this.prevAll(".materialid").val("");
 
                 $.get("/hub/material/" + materialid, function (result) {
-                    var str = "<h2>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + materialtxt + "</span></h2>"
+                    var str = "<h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + materialtxt + "</span></h3>"
                         + "<div style='margin:10px 0px 10px 32px'>"
                         + "  <span>精度：" + accuracyOpt + "</span>"
                         + "  <span style='padding-left:22px;'>完成周期：" + completeOpt + "</span>"
