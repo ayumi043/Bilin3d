@@ -308,10 +308,10 @@ namespace Bilin3d.Modules {
 
             Get["/printer/material/list"] = parameters => {
                 string sql = $@"
-                    select t1.id,t2.fname, t4.MaterialId,t4.Name
+                    select t1.SupplierId ,t1.PrinterId,t2.fname as PrintName, t4.MaterialId,t4.Name as MaterialName
                     from t_supplier_printer t1
                     left join t_printer t2 on t2.printerid=t1.printerid
-                    left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId
+                    left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId  and t3.PrinterId=t2.PrinterId
                     left join t_material t4 on t4.MaterialId = t3.MaterialId
                     where t1.state='0' and t2.state='0'
                         and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
