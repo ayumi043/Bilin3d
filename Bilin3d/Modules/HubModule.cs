@@ -305,6 +305,23 @@ namespace Bilin3d.Modules {
                 Model.completeOpt = completeOpt;
                 return View["Print", Model];
             };
+                        
+            Get["/printer/material/list"] = parameters => {
+                string sql = $@"
+                    select t1.SupplierId ,t1.PrinterId,t2.fname as PrintName, t4.MaterialId,t4.Name as MaterialName
+                    from t_supplier_printer t1
+                    left join t_printer t2 on t2.printerid=t1.printerid
+                    left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId  and t3.PrinterId=t2.PrinterId
+                    left join t_material t4 on t4.MaterialId = t3.MaterialId
+                    where t1.state='0' and t2.state='0'
+                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
+                var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
+                return Response.AsJson(
+                    supplierprintermaterials
+                        .GroupBy(i => new { i.SupplierId, i.PrinterId, i.PrintName })
+                        .Select(x => new { printer = x.Key, result = x })
+                    , Nancy.HttpStatusCode.OK);
+            };
 
             Get["/printer/material/list"] = parameters => {
                 string sql = $@"
@@ -315,8 +332,17 @@ namespace Bilin3d.Modules {
                     left join t_material t4 on t4.MaterialId = t3.MaterialId
                     where t1.state='0' and t2.state='0'
                         and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
-                var printers = db.Select<SupplierPrinterModel>(sql);
-                return Response.AsJson(printers, Nancy.HttpStatusCode.OK);
+                var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
+                return Response.AsJson(
+                    supplierprintermaterials
+                        .GroupBy(i => new { i.SupplierId, i.PrinterId, i.PrintName })
+                        .Select(x => new { printer = x.Key, result = x })
+                    , Nancy.HttpStatusCode.OK);
+            };
+            
+            Get["/printer/material/{printerid}"] = parameters => {
+                string printerid = parameters.printerid;
+                return Response.AsText(printerid, "text/html; charset=utf-8");
             };
 
             Post["/printer/add"] = parameters => {

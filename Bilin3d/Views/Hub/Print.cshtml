@@ -97,18 +97,25 @@
                     success: function (data) {
                         var str = "";
                         $.each(data, function (index, item) {
+                            var materials = "<hr>";
+                            $.each(item.result, function (index, item1) {
+                                if (item1.materialId) {
+                                    materials += "<div class='materialid' materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.materialName + "</div>";
+                                }
+                            });
+                            materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["fname"] + "<span class='printerid'>" + item["iD"] + "</span></h3>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
-                                        + "   <div class='material-list'></div>"
+                                        + "   <div class='material-list'>" + materials + "</div>"
                                         + "   <div class='pre-material'></div>"
                                         + "   <h6>添加打印材料</h6>"
                                         + "   <input type='hidden' class='materialid' value='' />"
                                         + "   <input type='text' class='materialtxt' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
-                                        + "   <button type='button' class='btn btn-u selectmaterial' printerid='" + item["iD"]  + "' style='font-size:14px;' disabled='disabled'>确定选择</button>"
+                                        + "   <button type='button' class='btn btn-u selectmaterial' printerid='" + item["printer"]["printerId"] + "' style='font-size:14px;' disabled='disabled'>确定选择</button>"
                                         + "   <a href=''>找不到材料？请告诉我们!</a>"
                                         + "</div>"
                                   + "</div>";
@@ -226,7 +233,7 @@
     
     <!-- Begin Content -->
     <div class="col-md-9">
-        <div><h2>打印机</h2></div>
+        <div><h2>我的打印机</h2></div>
         
         <div id="printerlist">            
         </div>

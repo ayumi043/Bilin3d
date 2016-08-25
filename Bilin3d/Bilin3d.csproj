@@ -972,6 +972,7 @@
     <Compile Include="Models\PageModel.cs" />
     <Compile Include="Models\PrinterCompleteModel.cs" />
     <Compile Include="Models\PrinterAccuracyModel.cs" />
+    <Compile Include="Models\SupplierPrinterMaterialModel.cs" />
     <Compile Include="Models\SupplierPrinterModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\CustomAnnotations\RequiredIfAttribute.cs" />
