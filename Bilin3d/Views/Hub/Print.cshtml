@@ -39,7 +39,7 @@
         }
 
         #printerlist .printerid{display:none;}
-        #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;}
+        #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;width:600px;}
         .pbody{display:none;}
     </style>
 }
@@ -106,7 +106,7 @@
                             materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3><div style='float:right;width:100px;margin-top:-25px;font-size:14px;'>状态：" + item["printer"]["printerState"] + "</div>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"

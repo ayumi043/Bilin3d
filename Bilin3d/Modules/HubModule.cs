@@ -32,7 +32,8 @@ namespace Bilin3d.Modules {
 
             Get["/"] = parameters => {
                 Page.Title = "HUB首页";
-                return View["Index", Model];
+                return Response.AsRedirect("/hub/printer");
+                //return View["Index", Model];
             };
 
             Get["/add"] = parameters => {
@@ -305,41 +306,35 @@ namespace Bilin3d.Modules {
                 Model.completeOpt = completeOpt;
                 return View["Print", Model];
             };
-                        
-            Get["/printer/material/list"] = parameters => {
-                string sql = $@"
-                    select t1.SupplierId ,t1.PrinterId,t2.fname as PrintName, t4.MaterialId,t4.Name as MaterialName
-                    from t_supplier_printer t1
-                    left join t_printer t2 on t2.printerid=t1.printerid
-                    left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId  and t3.PrinterId=t2.PrinterId
-                    left join t_material t4 on t4.MaterialId = t3.MaterialId
-                    where t1.state='0' and t2.state='0'
-                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
-                var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
-                return Response.AsJson(
-                    supplierprintermaterials
-                        .GroupBy(i => new { i.SupplierId, i.PrinterId, i.PrintName })
-                        .Select(x => new { printer = x.Key, result = x })
-                    , Nancy.HttpStatusCode.OK);
-            };
 
             Get["/printer/material/list"] = parameters => {
                 string sql = $@"
-                    select t1.SupplierId ,t1.PrinterId,t2.fname as PrintName, t4.MaterialId,t4.Name as MaterialName
+                    select t1.SupplierId ,t1.PrinterId, t2.fname as PrinterName, t1.State as PrinterState, t4.MaterialId,t4.Name as MaterialName
                     from t_supplier_printer t1
                     left join t_printer t2 on t2.printerid=t1.printerid
                     left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId  and t3.PrinterId=t2.PrinterId
                     left join t_material t4 on t4.MaterialId = t3.MaterialId
-                    where t1.state='0' and t2.state='0'
+                    where 
+                        --t1.state='0' and 
+                        t2.state='0'
                         and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
                 var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
                 return Response.AsJson(
                     supplierprintermaterials
-                        .GroupBy(i => new { i.SupplierId, i.PrinterId, i.PrintName })
-                        .Select(x => new { printer = x.Key, result = x })
+                        .GroupBy(i => new { i.SupplierId, i.PrinterId, i.PrinterName, i.PrinterState })
+                        //.Select(x => new { printer = x.Key, result = x })
+                        .Select(x => new {
+                            printer = new {
+                                SupplierId = x.Key.SupplierId,
+                                PrinterId = x.Key.PrinterId,
+                                PrinterName = x.Key.PrinterName,
+                                PrinterState = x.Key.PrinterState == "0" ? "启用" : "禁用",
+                            },
+                            result = x
+                        })
                     , Nancy.HttpStatusCode.OK);
             };
-            
+                       
             Get["/printer/material/{printerid}"] = parameters => {
                 string printerid = parameters.printerid;
                 return Response.AsText(printerid, "text/html; charset=utf-8");
