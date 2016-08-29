@@ -106,7 +106,7 @@
                             materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3><div style='float:right;width:100px;margin-top:-25px;font-size:14px;'>状态：" + item["printer"]["printerState"] + "</div>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3><div style='float:right;width:100px;margin-top:-25px;font-size:14px;'>状态：" + "<i class='printerState'>" + item["printer"]["printerState"] + "</i>" + "</div>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
@@ -179,6 +179,10 @@
                         + "<hr>";
                     $this.prevAll(".pre-material").html(str);
                 });
+            });
+                        
+            $(document).on("click", ".printerState", function () {
+
             });
 
             $(document).on("click", ".addmaterial", function () {
