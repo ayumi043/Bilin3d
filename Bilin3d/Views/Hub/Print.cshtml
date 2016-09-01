@@ -41,6 +41,7 @@
         #printerlist .printerid{display:none;}
         #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;width:600px;}
         .pbody{display:none;}
+        .printerState{cursor:pointer;}
     </style>
 }
 
@@ -106,7 +107,7 @@
                             materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "<span class='printerid'>" + item["printer"]["printerId"] + "</span></h3><div style='float:right;width:100px;margin-top:-25px;font-size:14px;'>状态：" + "<i class='printerState'>" + item["printer"]["printerState"] + "</i>" + "</div>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "</h3><div style='float:right;width:40px;margin-top:-25px;font-size:14px;'>" + "<i class='printerState' id='" + item["printer"]["printerId"] + "'>" + item["printer"]["printerState"] + "</i>" + "</div>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
@@ -182,7 +183,21 @@
             });
                         
             $(document).on("click", ".printerState", function () {
+                var printerid = $(this).attr("id");
+                var stateid;
+                var s = $(this).html().trim();
+               
 
+                if (s === "启用") {
+                    if (confirm('确定禁用吗？')) {
+                        stateid = "1";
+                    }
+                    
+                } else {
+                    if (confirm('确定启用吗？')) {
+                        stateid = "0";
+                    }
+                }
             });
 
             $(document).on("click", ".addmaterial", function () {

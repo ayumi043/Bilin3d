@@ -314,8 +314,7 @@ namespace Bilin3d.Modules {
                     left join t_printer t2 on t2.printerid=t1.printerid
                     left join t_supplier_printer_material t3 on t3.SupplierId=t1.SupplierId  and t3.PrinterId=t2.PrinterId
                     left join t_material t4 on t4.MaterialId = t3.MaterialId
-                    where 
-                        --t1.state='0' and 
+                    where                        
                         t2.state='0'
                         and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
                 var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
