@@ -40,8 +40,11 @@
 
         #printerlist .printerid{display:none;}
         #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;width:600px;}
-        .pbody{display:none;}
+        .pbody{display:none;padding-bottom:35px;}
         .printerState{cursor:pointer;}
+        hr{
+            margin: 12px 0;
+        }
     </style>
 }
 
@@ -191,11 +194,45 @@
                 if (s === "启用") {
                     if (confirm('确定禁用吗？')) {
                         stateid = "1";
+                        $.ajax({
+                            url: '/hub/printer/state',
+                            data: {
+                                printerid: printerid,
+                                stateid: stateid
+                            },
+                            type: 'POST',
+                            success: function (data) {
+                                alert("禁用成功!");
+                                window.location = "/hub/printer";
+                            },
+                            error: function (data) {
+                                if (data.status == "400") {
+                                    alert(data.responseJSON.message);
+                                }
+                            }
+                        });
                     }
                     
                 } else {
                     if (confirm('确定启用吗？')) {
                         stateid = "0";
+                        $.ajax({
+                            url: '/hub/printer/state',
+                            data: {
+                                printerid: printerid,
+                                stateid: stateid
+                            },
+                            type: 'POST',
+                            success: function (data) {
+                                alert("启用成功!");
+                                window.location = "/hub/printer";
+                            },
+                            error: function (data) {
+                                if (data.status == "400") {
+                                    alert(data.responseJSON.message);
+                                }
+                            }
+                        });
                     }
                 }
             });

@@ -334,9 +334,20 @@ namespace Bilin3d.Modules {
                     , Nancy.HttpStatusCode.OK);
             };
                        
-            Get["/printer/material/{printerid}"] = parameters => {
-                string printerid = parameters.printerid;
-                return Response.AsText(printerid, "text/html; charset=utf-8");
+            Post["/printer/state"] = parameters => {
+                string printerid = Request.Form.printerid;
+                string stateid = Request.Form.printerid;
+                if (printerid == null || stateid == null ) {
+                    return Response.AsJson(new { message = "状态值或打印机id为空!" }, Nancy.HttpStatusCode.BadRequest);
+                }
+                var stateids = new List<string> { "0", "1", "2" };
+                if (!stateids.Contains(printerid)) {
+                    return Response.AsJson(new { message = "状态值不在范围内!" }, Nancy.HttpStatusCode.BadRequest);
+                }
+
+                string sql = $"update t_supplier_printer set state='{stateid}' where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
+                db.ExecuteNonQuery(sql);
+                return Response.AsJson(new { message = "操作成功!" }, Nancy.HttpStatusCode.OK);
             };
 
             Post["/printer/add"] = parameters => {
