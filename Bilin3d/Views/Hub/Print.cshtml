@@ -39,12 +39,14 @@
         }
 
         #printerlist .printerid{display:none;}
-        #printerlist .fname{font-size:22px;font-weight:bold;cursor:pointer;width:600px;}
+        .panel-heading{height:40px; line-height:40px;}
+        #printerlist .fname{font-size:20px;font-weight:bold;cursor:pointer;max-width:400px;float:left;}
         .pbody{display:none;padding-bottom:35px;}
-        .printerState{cursor:pointer;}
+        .printerState{margin-right:15px;}
         hr{
             margin: 12px 0;
         }
+        .dropdown-menu{min-width:96px;}
     </style>
 }
 
@@ -110,7 +112,22 @@
                             materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
-                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "</h3><div style='float:right;width:40px;margin-top:-25px;font-size:14px;'>" + "<i class='printerState' id='" + item["printer"]["printerId"] + "'>" + item["printer"]["printerState"] + "</i>" + "</div>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "</h3>"
+                                        + "   <div style='float:right;width:140px;font-size:14px;'>" + "<i>已" + item["printer"]["printerState"] + "</i>"
+                                        + "     <div class='btn-group'>"
+                                        + "         <button type='button' class='btn btn-default btn-sm'>操作</button>"
+                                        + "         <button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-expanded='false'>"
+                                        + "             <span class='caret'></span>"
+                                        + "             <span class='sr-only'>Toggle Dropdown</span>"
+                                        + "         </button>"
+                                        + "         <ul class='dropdown-menu'>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','0')\">启用</a></li>"
+                                        + "             <li><a >禁用</a></li>"
+                                        + "             <li class='divider'></li>"
+                                        + "             <li><a >删除</a></li>"
+                                        + "         </ul>"
+                                        + "     </div>"
+                                        + "   </div>"
                                         + "</div>"
                                         + "<div class='panel-body pbody'>"
                                         + "   <h4>打印材料</h4>"
@@ -303,7 +320,7 @@
         </div>
 
         <div class="margin-bottom-40"></div>
-
+               
     </div>
     <!-- End Content -->
 </div>
