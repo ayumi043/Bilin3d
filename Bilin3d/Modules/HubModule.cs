@@ -420,6 +420,17 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
+            Post["/printer/material/delete"] = parameters => {
+                string printerid = Request.Form.printerid;
+                string materialid = Request.Form.materialid;   
+                string sql = $@"
+                    delete from t_supplier_printer_material 
+                    where SupplierId=(select SupplierId from t_user where id='{Page.UserId}')
+                        and PrinterId='{printerid}' and MaterialId='{materialid}';";
+                db.ExecuteNonQuery(sql);
+                return null;
+            };
+
             Get["/blance"] = parameters => {
                 return Response.AsText("账户余额", "text/html; charset=utf-8");
             };
