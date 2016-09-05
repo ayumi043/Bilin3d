@@ -55,6 +55,30 @@
     <script src="/hub/printer.js"></script>
     <script src="/hub/material.js"></script>
     <script>
+        var changestate = function (printerid, stateid) {
+            $.ajax({
+                url: '/hub/printer/state',
+                data: {
+                    printerid: printerid,
+                    stateid: stateid
+                },
+                type: 'POST',
+                success: function (data) {
+                    var str = "";
+                    if (stateid === "0") str = "启用成功";
+                    if (stateid === "1") str = "禁用成功";
+                    if (stateid === "2") str = "删除成功";
+                    alert(str);
+                    window.location = "/hub/printer";
+                },
+                error: function (data) {
+                    if (data.status == "400") {
+                        alert(data.responseJSON.message);
+                    }
+                }
+            });
+        };
+
         $(function () {
             $("#printer").autocomplete({
                 minLength: 0,
@@ -122,9 +146,9 @@
                                         + "         </button>"
                                         + "         <ul class='dropdown-menu'>"
                                         + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','0')\">启用</a></li>"
-                                        + "             <li><a >禁用</a></li>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','1')\">禁用</a></li>"
                                         + "             <li class='divider'></li>"
-                                        + "             <li><a >删除</a></li>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','2')\">删除</a></li>"
                                         + "         </ul>"
                                         + "     </div>"
                                         + "   </div>"
@@ -201,59 +225,7 @@
                     $this.prevAll(".pre-material").html(str);
                 });
             });
-                        
-            $(document).on("click", ".printerState", function () {
-                var printerid = $(this).attr("id");
-                var stateid;
-                var s = $(this).html().trim();
-               
-
-                if (s === "启用") {
-                    if (confirm('确定禁用吗？')) {
-                        stateid = "1";
-                        $.ajax({
-                            url: '/hub/printer/state',
-                            data: {
-                                printerid: printerid,
-                                stateid: stateid
-                            },
-                            type: 'POST',
-                            success: function (data) {
-                                alert("禁用成功!");
-                                window.location = "/hub/printer";
-                            },
-                            error: function (data) {
-                                if (data.status == "400") {
-                                    alert(data.responseJSON.message);
-                                }
-                            }
-                        });
-                    }
-                    
-                } else {
-                    if (confirm('确定启用吗？')) {
-                        stateid = "0";
-                        $.ajax({
-                            url: '/hub/printer/state',
-                            data: {
-                                printerid: printerid,
-                                stateid: stateid
-                            },
-                            type: 'POST',
-                            success: function (data) {
-                                alert("启用成功!");
-                                window.location = "/hub/printer";
-                            },
-                            error: function (data) {
-                                if (data.status == "400") {
-                                    alert(data.responseJSON.message);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-
+         
             $(document).on("click", ".addmaterial", function () {
                 var info = $(this).parents(".pre-material");              
                 var materialid = $(this).attr("materialid");

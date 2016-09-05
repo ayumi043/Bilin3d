@@ -336,7 +336,7 @@ namespace Bilin3d.Modules {
                        
             Post["/printer/state"] = parameters => {
                 string printerid = Request.Form.printerid;
-                string stateid = Request.Form.printerid;
+                string stateid = Request.Form.stateid;
                 if (printerid == null || stateid == null ) {
                     return Response.AsJson(new { message = "状态值或打印机id为空!" }, Nancy.HttpStatusCode.BadRequest);
                 }
