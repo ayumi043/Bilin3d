@@ -316,7 +316,8 @@ namespace Bilin3d.Modules {
                     left join t_material t4 on t4.MaterialId = t3.MaterialId
                     where                        
                         t2.state='0'
-                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}');";
+                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}')
+                    order by t1.CreateTime desc;";
                 var supplierprintermaterials = db.Select<SupplierPrinterMaterialModel>(sql);
                 return Response.AsJson(
                     supplierprintermaterials
@@ -333,10 +334,31 @@ namespace Bilin3d.Modules {
                         })
                     , Nancy.HttpStatusCode.OK);
             };
-                       
+
+            Post["/printer/material/{printerid}"] = parameters => {
+                string printerid = parameters.printerid;
+                string sql = $@"
+                    select t2.MaterialId,t2.Name
+                    from t_supplier_printer_material t1
+                    left join t_material t2 on t2.MaterialId = t1.MaterialId
+                    where                        
+                        t2.state='0'
+                        and t1.supplierid=(select SupplierId from t_user where id='{Page.UserId}')
+                        and t1.printerid='{printerid}'
+                    order by t1.CreateTime desc;";
+                var materials = db.Select<Material>(sql);
+                return Response.AsJson(materials, Nancy.HttpStatusCode.OK);
+            };
+
             Post["/printer/state"] = parameters => {
                 string printerid = Request.Form.printerid;
                 string stateid = Request.Form.stateid;
+
+                var message = "";
+                if (stateid == "0") message = "启用成功";
+                if (stateid == "1") message = "禁用成功";
+                if (stateid == "2") message = "删除成功";
+
                 if (printerid == null || stateid == null ) {
                     return Response.AsJson(new { message = "状态值或打印机id为空!" }, Nancy.HttpStatusCode.BadRequest);
                 }
@@ -347,21 +369,31 @@ namespace Bilin3d.Modules {
 
                 string sql = $"update t_supplier_printer set state='{stateid}' where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
                 db.ExecuteNonQuery(sql);
-                return Response.AsJson(new { message = "操作成功!" }, Nancy.HttpStatusCode.OK);
+                return Response.AsJson(new { message = message }, Nancy.HttpStatusCode.OK);
             };
 
             Post["/printer/add"] = parameters => {
                 string printerid = Request.Form.printerid;
                 string sql = $@"select count(1) 
                                 from t_supplier_printer 
-                                where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
+                                where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}' and State in ('0','1');";
                 var count = db.Scalar<int>(sql);
                 if (count > 0) {
                     return Response.AsJson(new { message = "打印机已存在!" }, Nancy.HttpStatusCode.BadRequest);
                 }
 
+                sql = $@"select count(1) 
+                        from t_supplier_printer 
+                        where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}' and State='2';";
+                count = db.Scalar<int>(sql);
+                if (count > 0) {
+                    sql = $@"update t_supplier_printer set State='0' where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
+                    db.ExecuteNonQuery(sql);
+                    return null;
+                }
+
                 sql = $@"INSERT INTO t_supplier_printer (ID,SupplierId,PrinterId)
-                                    VALUES('{Guid.NewGuid().ToString("N")}',(select SupplierId from t_user where id='{Page.UserId}'),'{printerid}');";
+                                VALUES('{Guid.NewGuid().ToString("N")}',(select SupplierId from t_user where id='{Page.UserId}'),'{printerid}');";
                 db.ExecuteNonQuery(sql);
                 return null;
             };

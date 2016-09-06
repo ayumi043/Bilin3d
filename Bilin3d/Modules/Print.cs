@@ -117,7 +117,8 @@ namespace Bilin3d.Modules {
             };
 
             Get["/suppliers/{distance}"] = parameters => {
-                string distance = parameters.distance;   
+                string _distance = parameters.distance;
+                double distance = double.Parse(_distance);
                 double lng = 0, lat = 0;
 
                 string url = $"http://api.map.baidu.com/location/ip?ak=26904d2efeb684d7d59d493098e7295d&ip={Request.UserHostAddress}&coor=bd09ll";
@@ -130,7 +131,7 @@ namespace Bilin3d.Modules {
                     lat = double.Parse(m["point"]["y"].ToString()); //纬度
                 }
 
-                double range = 180 / Math.PI * 1 / 6372.797; //里面的 1 就代表搜索 1km 之内，单位km
+                double range = 180 / Math.PI * distance / 6372.797; //distance代表距离，单位是km
                 double lngR = range / Math.Cos(lat * Math.PI / 180.0);
                 double maxLat = lat + range;
                 double minLat = lat - range;

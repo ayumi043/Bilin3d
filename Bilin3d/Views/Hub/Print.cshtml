@@ -46,7 +46,9 @@
         hr{
             margin: 12px 0;
         }
-        .dropdown-menu{min-width:96px;}
+        .dropdown-menu{/*min-width:96px;*/}
+        .delmaterial{font-size:12px;padding-left:16px;color:red;cursor:pointer;float:right;}
+        .delmaterial:hover{text-decoration:underline;}
     </style>
 }
 
@@ -63,12 +65,8 @@
                     stateid: stateid
                 },
                 type: 'POST',
-                success: function (data) {
-                    var str = "";
-                    if (stateid === "0") str = "启用成功";
-                    if (stateid === "1") str = "禁用成功";
-                    if (stateid === "2") str = "删除成功";
-                    alert(str);
+                success: function (data) {                   
+                    alert(data.message);
                     window.location = "/hub/printer";
                 },
                 error: function (data) {
@@ -130,14 +128,14 @@
                             var materials = "<hr>";
                             $.each(item.result, function (index, item1) {
                                 if (item1.materialId) {
-                                    materials += "<div class='materialid' materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.materialName + "</div>";
+                                    materials += "<div class='materialid' printerId='" + item["printer"]["printerId"] + "'  materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.materialName + "</span><span class='delmaterial'>删除</span></div>";
                                 }
                             });
                             materials += "<hr>"
                             str += "<div class='panel panel-grey equal-height-column'>"
                                         + "<div class='panel-heading'>"
                                         + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "</h3>"
-                                        + "   <div style='float:right;width:140px;font-size:14px;'>" + "<i>已" + item["printer"]["printerState"] + "</i>"
+                                        + "   <div style='float:right;width:140px;font-size:14px;'>" + "<i style='padding-right:16px;'>已" + item["printer"]["printerState"] + "</i>"
                                         + "     <div class='btn-group'>"
                                         + "         <button type='button' class='btn btn-default btn-sm'>操作</button>"
                                         + "         <button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-expanded='false'>"
@@ -224,7 +222,7 @@
                         + "<hr>";
                     $this.prevAll(".pre-material").html(str);
                 });
-            });
+            });        
          
             $(document).on("click", ".addmaterial", function () {
                 var info = $(this).parents(".pre-material");              
@@ -238,6 +236,8 @@
                     return;
                 }
 
+                var mat = info.prev(".material-list");
+
                 if (materialid && printerid && accuracyid && completeid) {
                     $.ajax({
                         url: '/hub/printer/material/add',
@@ -249,9 +249,27 @@
                             price: price
                         },
                         type: 'POST',
-                        success: function (data) {
-                            alert("添加成功!");
-                            //GetPrinters();
+                        success: function (data) {                            
+                            info.html("");
+                            $.ajax({
+                                url: "/hub/printer/material/" + printerid,
+                                type: 'POST',
+                                success: function (data) {
+                                    var materials = "<hr>";
+                                    $.each(data, function (index, item1) {
+                                        if (item1.materialId) {
+                                            materials += "<div class='materialid' printerId='" + printerid + "'  materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.name + "</span><span class='delmaterial'>删除</span></div>";
+                                        }
+                                    });
+                                    mat.html(materials);
+                                    alert("添加成功!");
+                                },
+                                error: function (data) {
+                                    if (data.status == "400") {
+                                        alert(data.responseJSON.message);
+                                    }
+                                }
+                            });                            
                         },
                         error: function (data) {
                             if (data.status == "400") {
@@ -262,8 +280,29 @@
                 } else {
                     alert("请正确填写信息");
                     return;
-                }               
+                }
+            });
 
+            $(document).on("click", ".delmaterial", function () {
+                var $mat = $(this).parents(".materialid");
+                var printerid = $mat.attr("printerId");
+                var materialid = $mat.attr("materialId");              
+                $.ajax({
+                    url: '/hub/printer/material/delete',
+                    data: {
+                        printerid: printerid,
+                        materialid: materialid
+                    },
+                    type: 'POST',
+                    success: function (data) {
+                        $mat.remove();
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert(data.responseJSON.message);
+                        }
+                    }
+                });
             });
 
 
