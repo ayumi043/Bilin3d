@@ -131,6 +131,9 @@ namespace Bilin3d.Modules {
                     lat = double.Parse(m["point"]["y"].ToString()); //纬度
                 }
 
+                lng = 118.645297;
+                lat = 24.879442;
+
                 double range = 180 / Math.PI * distance / 6372.797; //distance代表距离，单位是km
                 double lngR = range / Math.Cos(lat * Math.PI / 180.0);
                 double maxLat = lat + range;
