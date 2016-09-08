@@ -141,12 +141,15 @@ namespace Bilin3d.Modules {
                 double minLat = lat - range;
                 double maxLng = lng + lngR;
                 double minLng = lng - lngR;
+
+                //暂时精确到供应商，不精确到供应商的打印机
                 string sql = $@"
                     SELECT t1.supplierId,t1.fname,address,tel,qq,logo 
                     FROM t_supplier t1
                     join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
                     WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
-                        and t2.MaterialId=@MaterialId;";
+                        and t2.MaterialId=@MaterialId
+                    Group by t1.supplierId,t1.fname,address,tel,qq,logo;";
                 var suppliers = db.Select<SupplierModel>(sql, new { MaterialId = materialid });
                 return Response.AsJson(suppliers.Select(i => new {
                     supplierId = i.SupplierId,
