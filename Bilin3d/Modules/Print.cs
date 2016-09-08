@@ -116,9 +116,9 @@ namespace Bilin3d.Modules {
                 //return View["Index", base.Model];
             };
 
-            Get["/suppliers/{distance}"] = parameters => {
+            Get["/suppliers"] = parameters => {
                 string materialid = Request.Query["materialid"].Value;
-                string _distance = parameters.distance;
+                string _distance = Request.Query["distance"].Value;
                 double distance = double.Parse(_distance);
                 double lng = 0, lat = 0;
 
@@ -142,12 +142,12 @@ namespace Bilin3d.Modules {
                 double maxLng = lng + lngR;
                 double minLng = lng - lngR;
                 string sql = $@"
-                    SELECT supplierId,fname,address,tel,qq,logo 
+                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo 
                     FROM t_supplier t1
-                    join t_supplier_printer_material t2 on t2.MaterialId=t1.MaterialId
+                    join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
                     WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
-                        and t2.MaterialId={materialid};";
-                var suppliers = db.Select<SupplierModel>(sql);
+                        and t2.MaterialId=@MaterialId;";
+                var suppliers = db.Select<SupplierModel>(sql, new { MaterialId = materialid });
                 return Response.AsJson(suppliers.Select(i => new {
                     supplierId = i.SupplierId,
                     fname = i.Fname,
