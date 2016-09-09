@@ -1036,12 +1036,12 @@
     <Content Include="Views\Hub\Success.cshtml" />
     <Content Include="Views\Admin\Printer\Index.cshtml" />
     <Content Include="Views\Hub\Print.cshtml" />
+    <Content Include="Views\Print\index-复制.cshtml" />
     <None Include="Views\Print\index.cshtml" />
     <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />
     <Content Include="Views\Home\Wiki.cshtml" />
     <Content Include="Views\Car\CheckOut.cshtml" />
-    <Content Include="Views\Print\index - 复制.cshtml" />
     <Content Include="Views\_Hub.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -118,6 +118,7 @@ namespace Bilin3d.Modules {
 
             Get["/suppliers"] = parameters => {
                 string materialid = Request.Query["materialid"].Value;
+                string printerid = Request.Query["printerid"].Value;
                 string _distance = Request.Query["distance"].Value;
                 double distance = double.Parse(_distance);
                 double lng = 0, lat = 0;
@@ -159,6 +160,7 @@ namespace Bilin3d.Modules {
                     qq = i.QQ,
                     logo = i.Logo
                 }));
+
             };
         }
 
