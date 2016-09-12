@@ -28,16 +28,15 @@ namespace Bilin3d.Modules {
 
             Get["/"] = parameters => {
                 base.Page.Title = "3D打印";
-                var materials = db.Select<Material>(q => q.State == 0);
-                base.Model.Materials = materials;
-
                 return View["Index", base.Model];
             };
 
-            Get["/test"] = parameters => {
-                return Response.AsJson(( new List<string> { "Foo","Bar","Hello","World"}).Select(i => new {
-                    message = i                    
-                }));
+            Get["/materials"] = parameters => {
+                var materials = db.Select<Material>(q => q.State == 0);
+                return Response.AsJson(materials);
+                //return Response.AsJson(( new List<string> { "Foo","Bar","Hello","World"}).Select(i => new {
+                //    message = i                    
+                //}));
             };
 
             Post["/upload"] = parameters => {

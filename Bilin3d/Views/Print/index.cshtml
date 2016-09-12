@@ -26,26 +26,19 @@
     <script src="http://cn.vuejs.org/js/vue.js"></script>
     @*<script src="http://cn.vuejs.org/js/vue.min.js"></script>*@
     <script>
-        var example1 = new Vue({
-            el: '#example-1',
+        var vm = new Vue({
+            el: '#mat',
             data: {
-                //items: [
-                //  { message: 'Foo' },
-                //  { message: 'Bar' }
-                //]
-                items: function () {
-                    $.get("/print/test", function (data) {                       
-                        return data;
-                    });
-                }
+                feed:"",
+                list: [],
+                final: {msg:""}
+            },
+            ready: function () {
+                $.get("/print/materials", function (data) {
+                    vm.list = data;
+                });
             }
         })
-
-        $.get("/print/test", function (data) {
-            alert(data);
-            return;
-            //return data;
-        });
     </script>
     
 
@@ -250,13 +243,7 @@
     </div>
 
 
-    <ul id="example-1">
-        <li v-for="item in items">
-            {{ item.message }}
-        </li>
-    </ul>
-
-
+  
     <table class="table text-center" id="mat">
         <tr class="active">
             <td class="col-md-3">材料</td>
@@ -265,29 +252,27 @@
             <td>预计交货时间</td>
             <td>数量</td>
             <td>密度(克/立方厘米)</td>
-            <td>单价</td>
-            <td>单次最低价格</td>
+            <td>操作</td>
             <td class="col-md-1"></td>
         </tr>
-        @foreach (var item in Model.Materials as List<Bilin3d.Models.Material>) {            
-            <tr class="cartr">
-                <td><a href="/material/@item.MaterialId" target="_blank">@item.Name</a></td>
-                <td>@item.Color</td>
-                <td>@item.Accuracy</td>
-                <td>@item.Delivery</td>
-                <td>
-                    <div>
-                        <a class="prev">-</a>
-                        <input class="num" type="text" disabled="disabled" value="1">
-                        <a class="next">+</a>
-                    </div>
-                </td>
-                <td>@item.Density</td>
-                <td>￥@item.Price 元</td>
-                <td>￥@item.Price1 元</td>
-                <td><input type="hidden" class="MaterialId" value="@item.MaterialId" /><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>
-            </tr>
-        }
+            
+        <tr class="cartr"  v-for="item in list">
+            <td><a href="/material/{{item.materialId}}" target="_blank">{{item.name}}</a></td>
+            <td>{{item.color}}</td>
+            <td>{{item.accuracy}}</td>
+            <td>{{item.delivery}}</td>
+            <td>
+                <div>
+                    <a class="prev">-</a>
+                    <input class="num" type="text" disabled="disabled" value="1">
+                    <a class="next">+</a>
+                </div>
+            </td>
+            <td>{{item.density}}</td>
+            <td><button class="btn btn-u btn-primary" type="button">选择</button></td>
+            <td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>
+        </tr>
+        
     </table>
 </div>
 
