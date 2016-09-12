@@ -34,6 +34,12 @@ namespace Bilin3d.Modules {
                 return View["Index", base.Model];
             };
 
+            Get["/test"] = parameters => {
+                return Response.AsJson(( new List<string> { "Foo","Bar","Hello","World"}).Select(i => new {
+                    message = i                    
+                }));
+            };
+
             Post["/upload"] = parameters => {
                 string uploadDirectory;
                 string filepath = "";
