@@ -56,6 +56,9 @@
                     $.get("/print/suppliers?materialid=" + materialid, function (data) {
                         vm.hublist = data;
                     });                    
+                },
+                addcar: function (supplierId) {
+                    alert(supplierId);
                 }
             }
         });       
@@ -275,7 +278,7 @@
                 <td>数量</td>
                 <td>密度(克/立方厘米)</td>
                 <td>操作</td>
-                <td class="col-md-1"></td>
+                @*<td class="col-md-1"></td>*@
             </tr>
 
             <tr class="cartr" v-for="item in matList 
@@ -294,7 +297,7 @@
                 </td>
                 <td>{{item.density}}</td>
                 <td><button class="btn btn-u btn-primary" type="button" v-on:click="gethubs(item.materialId)">选择</button></td>
-                <td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>
+                @*<td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>*@
             </tr>
         </table>
         <nav style="border-top:1px solid #ddd;">
@@ -314,9 +317,7 @@
                 <td class="col-md-3">名称</td>
                 <td>颜色</td>
                 <td>精度</td>
-                <td>预计交货时间</td>
-                <td>数量</td>
-                <td>密度(克/立方厘米)</td>
+                <td>预计交货时间</td>               
                 <td>操作</td>
                 <td class="col-md-1"></td>
             </tr>
@@ -324,19 +325,14 @@
             <tr class="cartr" v-for="item in hublist
                                 | filterBy hub
                                 | limitBy pageSize pageSize*curPageMat">
-                <td><a href="/material/{{item.materialId}}" target="_blank">{{item.name}}</a></td>
-                <td>{{item.color}}</td>
-                <td>{{item.accuracy}}</td>
-                <td>{{item.delivery}}</td>
+                <td><a href="#"><img v-bind:src=item.logo></a></td>
                 <td>
-                    <div>
-                        <a class="prev">-</a>
-                        <input class="num" type="text" disabled="disabled" value="1">
-                        <a class="next">+</a>
-                    </div>
+                    <h3>{{item.fname}}</h3>
+                    <div>{{item.address}}</div>
                 </td>
-                <td>{{item.density}}</td>
-                <td><button class="btn btn-u btn-primary" type="button" v-on:click="gethubs(item.materialId)">选择</button></td>
+                <td>{{item.tel}}</td>
+                <td>{{item.qq}}</td>
+                <td><button class="btn btn-u btn-primary" type="button" v-on:click="addcar(item.supplierId)">选择</button></td>
                 <td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>
             </tr>
 
