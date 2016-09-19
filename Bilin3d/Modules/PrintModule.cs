@@ -123,9 +123,11 @@ namespace Bilin3d.Modules {
 
             Get["/suppliers"] = parameters => {
                 string materialid = Request.Query["materialid"].Value;
-                string printerid = Request.Query["printerid"].Value;
                 string _distance = Request.Query["distance"].Value;
-                double distance = double.Parse(_distance);
+                double distance = 500;
+                if (_distance != null) {
+                    distance = double.Parse(_distance);
+                }                
                 double lng = 0, lat = 0;
 
                 string url = $"http://api.map.baidu.com/location/ip?ak=26904d2efeb684d7d59d493098e7295d&ip={Request.UserHostAddress}&coor=bd09ll";

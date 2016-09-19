@@ -998,7 +998,7 @@
     <Compile Include="Modules\HomeModule.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Modules\Print.cs" />
+    <Compile Include="Modules\PrintModule.cs" />
     <Compile Include="PageNotFoundHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserIdentity.cs" />
