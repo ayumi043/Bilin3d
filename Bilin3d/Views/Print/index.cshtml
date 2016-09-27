@@ -58,10 +58,10 @@
                     if (this.curPageMat === Math.ceil(this.matList.length / this.pageSize) - 1) return;
                     this.curPageMat++;
                 },
-                gethubs: function (materialid,index,_this) {
+                gethubs: function (materialid, index, event) {
                     vm.selectedMat = index;
-                    alert(_this);
-                    var num = $(_this)[0].parents(".cartr").find(".num").val();
+                    alert(event);
+                    var num = $(event.target).eq(0).parents(".cartr").find(".num").val();
                     alert(num);
                     $.get("/print/suppliers?materialid=" + materialid, function (data) {
                         vm.hublist = data;
@@ -340,12 +340,12 @@
                 <td>
                     <div>
                         <a class="prev">-</a>
-                        <input class="num" type="text" disabled="disabled" v-model="Num">
+                        <input class="num" type="text" disabled="disabled" value="1">
                         <a class="next">+</a>
                     </div>
                 </td>
                 <td>{{item.density}}</td>
-                <td><button class="btn btn-u btn-primary" type="button" v-on:click="gethubs(item.materialId,index,this)">选择</button></td>
+                <td><button class="btn btn-u" type="button" v-on:click="gethubs(item.materialId,index,$event)">选择</button></td>
                 @*<td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>*@
             </tr>
         </table>
