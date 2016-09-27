@@ -45,7 +45,7 @@ $(function () {
 });
 
 $(function () {
-    $(".prev").click(function () {
+    $("body").on("click", ".prev", function () {
         var $num = parseInt($(this).next(".num").val());
         var $price = parseFloat($(this).nextAll(".price").val());
         var $price1 = parseFloat($(this).nextAll(".price1").val());
@@ -53,7 +53,7 @@ $(function () {
         if ($num == 1) {
             $(this).parents("td").next(".AmountDetail").find("span").html($price);
             return;
-        } 
+        }
         $(this).next(".num").val($num - 1);
 
         var sumPrice = ($num - 1) * parseFloat($price);
@@ -75,7 +75,7 @@ $(function () {
         $(".totalprice").html(_p);
         //alert(_price);
     });
-    $(".next").click(function () {
+    $("body").on("click", ".next", function () {
         var $num = parseInt($(this).prev(".num").val());
         var $price = parseFloat($(this).nextAll(".price").val());
         var $price1 = parseFloat($(this).nextAll(".price1").val());
