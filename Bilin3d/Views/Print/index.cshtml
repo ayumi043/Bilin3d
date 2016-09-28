@@ -59,37 +59,31 @@
                     this.curPageMat++;
                 },
                 gethubs: function (materialid, index, event) {
-                    vm.selectedMat = index;
-                    alert(event);
+                    vm.selectedMat = index;                  
                     var num = $(event.target).eq(0).parents(".cartr").find(".num").val();
-                    alert(num);
+                    vm.Num = num;
                     $.get("/print/suppliers?materialid=" + materialid, function (data) {
                         vm.hublist = data;
                     });                    
                 },
-                addcar: function (supplierId) {
-                    alert(vm.Num);
-                    return;
-                    alert(supplierId);
-
+                addcar: function (supplierId) {                    
                     $("#error").hide();
                     $("#errormessage").html("");
 
-                    var parent = $(this).parents(".cartr");
+                    //var parent = $(this).parents(".cartr");
                     var MaterialId = $(this).prev(".MaterialId").val();
                     var FileName = $("#filename").html();
                     var Size = $("#filesize").html();
                     var Area = $("#filearea").html();
                     var Volume = $("#filevolume").html();
-                    var Num = parent.find(".num").val();
-                    //alert(Num);
-                    //return;
+                    //var Num = parent.find(".num").val();
+                    
                     $.ajax({
                         url: '/car/add',
                         data: {
-                            SupplierId: SupplierId,
+                            SupplierId: supplierId,
                             MaterialId: MaterialId,
-                            Num: Num,
+                            Num: vm.Num,
                             Size: Size,
                             Area: Area,
                             Volume: Volume,
@@ -382,7 +376,7 @@
                 </td>
                 <td>{{item.tel}}</td>
                 <td>{{item.qq}}</td>
-                <td><button class="btn btn-u btn-primary" type="button" v-on:click="addcar(item.supplierId)">加入购物车</button></td>
+                <td><button class="btn btn-u add-car" type="button" v-on:click="addcar(item.supplierId)" disabled="disabled">加入购物车</button></td>
             </tr>
         </table>
     </div>

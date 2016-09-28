@@ -8,7 +8,7 @@ namespace Bilin3d.Models
 {
     public class CarModel {
         [Required(ErrorMessage = "打印材料不能为空")]
-        public int MaterialId { get; set; }
+        public string MaterialId { get; set; }
 
         [Required(ErrorMessage = "打印数量不能为空")]
         [Range(1, 9999, ErrorMessage = "打印数量必须在1~9999之间")]
@@ -30,7 +30,8 @@ namespace Bilin3d.Models
         public string FileName { get; set; }
 
 
-
+        [Required(ErrorMessage = "供应商id不能为空")]
+        public string SupplierId { get; set; }
 
         //
         public decimal Amount { get; set; }

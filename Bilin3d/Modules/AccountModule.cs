@@ -402,8 +402,8 @@ namespace Bilin3d.Modules {
                 if (carid != null)
                 {
                     sql = string.Format(@"
-                        INSERT INTO T_CarDetail (CarId,FileName,Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime)
-                        SELECT '{0}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime
+                        INSERT INTO T_CarDetail (CarId,FileName,Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume,SupplierId)
+                        SELECT '{0}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume,SupplierId
                         FROM T_CarDetailTemp
                         WHERE CarId=(SELECT CarId FROM T_CarTemp WHERE UserId='{1}');
                     ", carid, Session["TempUserId"].ToString(), fileName);
@@ -417,8 +417,8 @@ namespace Bilin3d.Modules {
                         FROM T_CarTemp
                         WHERE UserId='{1}';
 
-                        INSERT INTO T_CarDetail (CarId,FileName,Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume)
-                        SELECT '{3}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume
+                        INSERT INTO T_CarDetail (CarId,FileName,Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume,SupplierId)
+                        SELECT '{3}','{2}',Weight,Area,Size,Num,MaterialId,Price,EditTime,CreateTime,Volume,SupplierId
                         FROM T_CarDetailTemp
                         WHERE CarId=(SELECT CarId FROM T_CarTemp WHERE UserId='{1}');
                     ", userid, Session["TempUserId"].ToString(), fileName, carid);
@@ -432,15 +432,8 @@ namespace Bilin3d.Modules {
                         UPDATE T_CarDetail t1
                         SET EditTime = NOW(),
                             Amount = (
-	                            SELECT
-		                            CASE
-		                            WHEN SUM(t1.Price * t1.Num) > mat.Price1 THEN
-			                            SUM(t1.Price * t1.Num)
-		                            ELSE
-			                            mat.Price1
-		                            END
-	                            FROM
-		                            T_Material mat where mat.Id = t1.MaterialId                                
+	                            SELECT t1.Price * t1.Num
+	                            FROM T_Material mat where mat.MaterialId = t1.MaterialId                                
                             )
                         WHERE t1.CarId='{0}';
 
