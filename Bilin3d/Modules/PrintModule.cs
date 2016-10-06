@@ -124,9 +124,10 @@ namespace Bilin3d.Modules {
             Get["/suppliers"] = parameters => {
                 string materialid = Request.Query["materialid"].Value;
                 string _distance = Request.Query["distance"].Value;
-                double distance = 500;
+                double distance = 20000;
                 if (_distance != null) {
-                    distance = double.Parse(_distance);
+                    bool b = double.TryParse(_distance,out distance);
+                    if (!b) distance = 20000;                    
                 }                
                 double lng = 0, lat = 0;
 

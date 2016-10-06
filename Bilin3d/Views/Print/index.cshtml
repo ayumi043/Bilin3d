@@ -62,7 +62,7 @@
                     vm.selectedMat = index;                  
                     var num = $(event.target).eq(0).parents(".cartr").find(".num").val();
                     vm.Num = num;
-                    $.get("/print/suppliers?materialid=" + materialid, function (data) {
+                    $.get("/print/suppliers?materialid=" + materialid + "&distance=" + vm.distance, function (data) {
                         vm.hublist = data;
                     });                    
                 },
@@ -309,11 +309,26 @@
             <div id="errormessage"></div>
         </div>
 
-
-
+       
+        <form class="form-inline" style="margin:0px 0px 16px 0px;">
+            <div class="form-group">
+                <label for="inputPassword2">关键字：</label>
+                <input class="form-control txtmat" type="text" v-model="material">
+            </div>
+            <div class="form-group" style="margin-left:28px;">
+                <label for="inputPassword2">供应商距离：</label>
+                <select class="form-control" v-model="distance">
+                    <option selected>不限</option>
+                    <option value="500">500公里</option>
+                    <option value="1000">1000公里</option>
+                    <option value="5000">5000公里</option>
+                </select>
+            </div>
+        </form>
+        
         <table class="table text-center" id="mat">
             <tr class="active">
-                <td class="col-md-3">材料<input class="txtmat" type="text" v-model="material"></td>
+                <td class="col-md-3">材料名</td>
                 <td>颜色</td>
                 <td>精度</td>
                 <td>预计交货时间</td>
@@ -323,10 +338,10 @@
                 @*<td class="col-md-1"></td>*@
             </tr>
 
-            <tr class="cartr" v-bind:class="{'success':selectedMat==index}" 
-                            v-for="(index,item) in matList 
-                                | filterBy material 
-                                | limitBy pageSize pageSize*curPageMat">
+            <tr class="cartr" v-bind:class="{'success':selectedMat==index}"
+                v-for="(index,item) in matList
+                            | filterBy material
+                            | limitBy pageSize pageSize*curPageMat">
                 <td><a href="/material/{{item.materialId}}" target="_blank">{{item.name}}</a></td>
                 <td>{{item.color}}</td>
                 <td>{{item.accuracy}}</td>
@@ -350,7 +365,7 @@
                 <li>当前第{{curPageMat+1}}页 共{{Math.ceil(matList.length / pageSize)}}页</li>
             </ul>
         </nav>
-    </div>
+</div>
 
     <div class="row" style="padding:0px 15px 0px 10px;">
         <div class="headline"><h2 class="heading">3. 选择打印供应商</h2> <span class="ssc">（<b>{{hublist.length}} </b>家供应商）</span></div>
