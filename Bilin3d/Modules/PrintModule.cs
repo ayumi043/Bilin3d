@@ -79,7 +79,7 @@ namespace Bilin3d.Modules {
                         filename = Path.Combine(uploadDirectory, _filename);
                     } else {
                         string userid = "";
-                        userid = db.Select<string>(string.Format(@"select Id from T_User where Email=@email", new { email = base.Page.CurrentUser })).FirstOrDefault();
+                        userid = db.Select<string>("select Id from T_User where Email=@email", new { email = base.Page.CurrentUser }).FirstOrDefault();
 
                         _filename = userid + "$" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss-fffff") + "$" + file.Name;
                         filename = Path.Combine(uploadDirectory, _filename);

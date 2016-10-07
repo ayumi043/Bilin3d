@@ -124,15 +124,8 @@ namespace Bilin3d.Modules {
                                 Num={0},
                                 EditTime=NOW(),
                                 Amount = (
-	                                SELECT
-		                                CASE
-		                                WHEN SUM(t1.Price * {0}) > mat.Price1 THEN
-			                                SUM(t1.Price * {0})
-		                                ELSE
-			                                mat.Price1
-		                                END
-	                                FROM
-		                                T_Material mat where mat.MaterialId = t1.MaterialId                                
+	                                SELECT SUM(t1.Price * {0})
+	                                FROM T_Material mat where mat.MaterialId = t1.MaterialId                                
                                 )
                         where Id='{1}';", s, ids[index]));
                         index++;
@@ -151,15 +144,8 @@ namespace Bilin3d.Modules {
                                 Num={0},
                                 EditTime=NOW(),
                                 Amount = (
-	                                SELECT
-		                                CASE
-		                                WHEN SUM(t1.Price * {0}) > mat.Price1 THEN
-			                                SUM(t1.Price * {0})
-		                                ELSE
-			                                mat.Price1
-		                                END
-	                                FROM
-		                                T_Material mat where mat.Id = t1.MaterialId                                
+	                                SELECT SUM(t1.Price * {0})
+	                                FROM T_Material mat where mat.Id = t1.MaterialId                                
                                 )
                         where Id='{1}';", s, ids[index]));
                         index++;
@@ -401,15 +387,8 @@ namespace Bilin3d.Modules {
                         UPDATE T_CarDetailTemp t1
                         SET EditTime = NOW(),
                             Amount = (
-	                            SELECT
-		                            CASE
-		                            WHEN SUM(t1.Price * t1.Num) > mat.Price1 THEN
-			                            SUM(t1.Price * t1.Num)
-		                            ELSE
-			                            mat.Price1
-		                            END
-	                            FROM
-		                            T_Material mat where mat.MaterialId = t1.MaterialId                                
+	                            SELECT SUM(t1.Price * t1.Num)
+	                            FROM T_Material mat where mat.MaterialId = t1.MaterialId                                
                             )
                         WHERE t1.CarId='{0}';
 

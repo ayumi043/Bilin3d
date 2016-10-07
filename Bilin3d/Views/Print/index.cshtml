@@ -37,11 +37,14 @@
             el: '#print',
             data: {
                 pageSize: 5,
-                selectedMat: -1,
-                Num:1,     //打印数量默认值
+                selectedMatIndex: -1,
+                Num: 1,     //打印数量默认值
                 matList: [],
                 curPageMat: 0,
                 hublist: [],
+                isupload: false,
+                distance: 500,
+                selectedMat:null,
                 final: { msg: "" }
             },
             ready: function () {
@@ -58,26 +61,27 @@
                     if (this.curPageMat === Math.ceil(this.matList.length / this.pageSize) - 1) return;
                     this.curPageMat++;
                 },
-                gethubs: function (materialid, index, event) {
-                    vm.selectedMat = index;                  
-                    var num = $(event.target).eq(0).parents(".cartr").find(".num").val();
-                    vm.Num = num;
+                gethubs: function (materialid, index, event) {                  
+                    vm.selectedMatIndex = index;
+                    vm.selectedMat = materialid;
+                    var num = $(event.target).eq(0).parents(".cartr").find(".num").val();                    
+                    vm.Num = num;                   
                     $.get("/print/suppliers?materialid=" + materialid + "&distance=" + vm.distance, function (data) {
                         vm.hublist = data;
-                    });                    
+                    });
                 },
-                addcar: function (supplierId) {                    
+                addcar: function (supplierId) {
                     $("#error").hide();
                     $("#errormessage").html("");
 
                     //var parent = $(this).parents(".cartr");
-                    var MaterialId = $(this).prev(".MaterialId").val();
+                    var MaterialId = vm.selectedMat;
                     var FileName = $("#filename").html();
                     var Size = $("#filesize").html();
                     var Area = $("#filearea").html();
                     var Volume = $("#filevolume").html();
                     //var Num = parent.find(".num").val();
-                    
+
                     $.ajax({
                         url: '/car/add',
                         data: {
@@ -93,7 +97,7 @@
                         cache: false,
                         dataType: 'json',
                         success: function (data) {
-                            //alert("成功！");
+                            alert("成功加入购车出！");
                             $("#checkout").removeAttr("disabled").attr("href", "/car");
 
                             //刷新顶部购物车
@@ -114,7 +118,7 @@
                     });
                 }
             }
-        });       
+        });
     </script>
     
 
@@ -198,8 +202,8 @@
                 thingiview.loadSTL(file.fullname);
 
 
-                $(".add-car").removeAttr("disabled");
-                
+                //$(".add-car").removeAttr("disabled");
+                vm.isupload = true;
             });
         });
     </script>
@@ -338,7 +342,7 @@
                 @*<td class="col-md-1"></td>*@
             </tr>
 
-            <tr class="cartr" v-bind:class="{'success':selectedMat==index}"
+            <tr class="cartr" v-bind:class="{'success':selectedMatIndex==index}"
                 v-for="(index,item) in matList
                             | filterBy material
                             | limitBy pageSize pageSize*curPageMat">
@@ -391,7 +395,7 @@
                 </td>
                 <td>{{item.tel}}</td>
                 <td>{{item.qq}}</td>
-                <td><button class="btn btn-u add-car" type="button" v-on:click="addcar(item.supplierId)" disabled="disabled">加入购物车</button></td>
+                <td><button class="btn btn-u add-car" type="button" v-on:click="addcar(item.supplierId)" :disabled="!isupload">加入购物车</button></td>
             </tr>
         </table>
     </div>

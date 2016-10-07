@@ -58,11 +58,12 @@ $(function () {
 
         var sumPrice = ($num - 1) * parseFloat($price);
         var _price;
-        if (sumPrice < $price1) {
-            _price = $price1
-        } else {
-            _price = sumPrice
-        }
+        //if (sumPrice < $price1) {
+        //    _price = $price1
+        //} else {
+        //    _price = sumPrice
+        //}
+        _price = sumPrice
         $(this).parents("td")
             .next(".AmountDetail")
             .find("span")
@@ -84,11 +85,12 @@ $(function () {
 
         var sumPrice = ($num + 1) * parseFloat($price);
         var _price;
-        if (sumPrice < $price1) {
-            _price = $price1
-        } else {
-            _price = sumPrice
-        }
+        //if (sumPrice < $price1) {
+        //    _price = $price1
+        //} else {
+        //    _price = sumPrice
+        //}
+        _price = sumPrice
         $(this).parents("td")
             .next(".AmountDetail")
             .find("span")
