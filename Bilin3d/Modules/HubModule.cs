@@ -288,7 +288,7 @@ namespace Bilin3d.Modules {
                 string sql = "select AccuracyId,Fname from t_printaccuracy;";
                 var printerAccuracys = db.Select<PrinterAccuracyModel>(sql);
                 sql = "select CompleteId,Fname from t_printcomplete;";
-                var printerCompletes = db.Select<PrinterCompleteModel>(sql);               
+                var printerCompletes = db.Select<PrinterCompleteModel>(sql);
 
                 var accuracyOpt = "<select class='accuracyOpt'>";
                 foreach (var item in printerAccuracys) {
@@ -301,9 +301,10 @@ namespace Bilin3d.Modules {
                     completeOpt += "<option value='" + item.CompleteId + "'>" + item.Fname + "</option>";
                 }
                 completeOpt += "</select>";
-
+               
                 Model.accuracyOpt = accuracyOpt;
                 Model.completeOpt = completeOpt;
+                Model.countNoAudit = CountNoAudit(db);
                 return View["Print", Model];
             };
 
@@ -471,6 +472,64 @@ namespace Bilin3d.Modules {
                 return Response.AsText("取现", "text/html; charset=utf-8");                
             };
 
+            Get["/order"] = parameters => {
+                string stateid = Request.Query["state"].Value;
+                if (stateid != null) {
+                    if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {
+                        throw new Exception("stateid只能是大于0的数字");
+                        //return null;
+                    }
+                }
+
+                string condition = " and 1=1 ";
+                if (stateid != null) {
+                    condition = string.Format(@" and t3.Id='{0}' ", stateid);
+                }
+
+                var orderStates = db.Select<OrderStateModel>(string.Format(@"
+                    select id,statename from t_orderstate"));
+                var orders = db.Select<OrderModel>($@"
+                    select t1.OrderId,
+                        t1.Express,
+                        t1.CreateTime,
+                        t1.Amount,
+                        t2.Area,
+                        t2.Size,
+                        t2.Volume,
+                        t2.Weight,
+                        t2.FileName,
+                        t2.Num,
+                        t5.name as MatName,
+                        t3.StateName,
+                        t3.Id as StateId,
+                        t4.Consignee,
+                        t4.Address
+                    from t_order t1
+                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
+                    left join t_orderstate   t3 on t3.Id=t1.StateId
+                    left join t_address  t4 on t4.Id=t1.AddressId
+                    left join t_material  t5 on t5.MaterialId=t2.MaterialId
+                    left join t_user t6 on t6.SupplierId=t2.SupplierId
+                    where t6.Id='{Page.UserId}' {condition}
+                    order by t1.CreateTime desc")
+                    //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
+                    .GroupBy(i => i.OrderId)
+                    .ToDictionary(k => k.Key, v => v.ToList());
+
+                base.Page.Title = "我的订单";
+                base.Model.OrderStates = orderStates;
+                base.Model.Orders = orders;
+                base.Model.countNoAudit = CountNoAudit(db);
+                return View["Order", base.Model];
+            };
+        }
+
+        private int CountNoAudit(IDbConnection db) {
+            return db.Scalar<int>($@"
+                    select count(1) 
+                    from t_order t1
+                    join t_orderstate t2 on t2.Id=t1.StateId 
+                    where t1.UserId='{Page.UserId}' and t2.Id=2");
         }
     }
 }

@@ -72,9 +72,10 @@ namespace Bilin3d.Modules {
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
                     .ToDictionary(k => k.Key, v => v.ToList());
+
                 base.Page.Title = "我的订单";
                 base.Model.OrderStates = orderStates;
-                base.Model.Orders = orders;
+                base.Model.Orders = orders; 
                 return View["Index", base.Model];
             };
 
