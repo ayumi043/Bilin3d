@@ -106,7 +106,7 @@
                 var payid = $("input[name='payid']:checked").val();
                 var remark = $("#remark").val();               
                 $.ajax({
-                    url: '/account/order',
+                    url: '/order',
                     data: {
                         addressid: addressid,
                         payid: payid,
@@ -118,7 +118,7 @@
                     success: function (data) {
                         //alert("成功！");  
                         if (data.message == "success") {
-                            window.location = "/account/order";
+                            window.location = "/order";
                         }                       
                         return;
                     },

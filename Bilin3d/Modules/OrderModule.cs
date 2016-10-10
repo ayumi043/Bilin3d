@@ -59,12 +59,14 @@ namespace Bilin3d.Modules {
                         t3.StateName,
                         t3.Id as StateId,
                         t4.Consignee,
-                        t4.Address 
+                        t4.Address,
+                        t6.Fname as SupplierName 
                     from t_order  t1
                     left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
                     left join t_orderstate   t3 on t3.Id=t1.StateId
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
+                    left join t_supplier t6 on t6.SupplierId=t2.SupplierId
                     where t1.UserId='{0}' {1}
                     order by t1.CreateTime desc", Page.UserId, condition))
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
@@ -108,8 +110,8 @@ namespace Bilin3d.Modules {
                         FROM T_Car
                         WHERE UserId='{1}';
 
-                        INSERT INTO t_orderdetail (OrderId,FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,EditTime,CreateTime)
-                        SELECT '{0}',FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,NOW(),NOW()
+                        INSERT INTO t_orderdetail (OrderId,FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,EditTime,CreateTime,SupplierId)
+                        SELECT '{0}',FileName,Weight,Area,Size,Volume,Num,MaterialId,Price,Amount,NOW(),NOW(),SupplierId
                         FROM T_CarDetail
                         WHERE CarId=(SELECT CarId FROM T_Car WHERE UserId='{1}');
 

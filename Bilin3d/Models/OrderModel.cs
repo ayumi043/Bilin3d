@@ -22,8 +22,8 @@ namespace Bilin3d.Models
         public string StateName { get; set; }
         public string Consignee { get; set; }
         public string Express { get; set; }
-        public string Address { get; set; }       
-
+        public string Address { get; set; }
+        public string SupplierName { get; set; }       
     }
 
 
