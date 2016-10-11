@@ -510,14 +510,13 @@ namespace Bilin3d.Modules {
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_user t6 on t6.SupplierId=t2.SupplierId
-                    where t6.Id='{Page.UserId}' {condition}
+                    where t6.Id='{Page.UserId}' {condition} and t3.id=2
                     order by t1.CreateTime desc")
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
                     .ToDictionary(k => k.Key, v => v.ToList());
 
-                base.Page.Title = "我的订单";
-                base.Model.OrderStates = orderStates;
+                base.Page.Title = "我的订单";              
                 base.Model.Orders = orders;
                 base.Model.countNoAudit = CountNoAudit(db);
                 return View["Order", base.Model];
