@@ -26,7 +26,10 @@ namespace Bilin3d {
             ); 
             conventions.StaticContentsConventions.Add(
                 StaticContentConventionBuilder.AddDirectory("public", @"public")
-            );           
+            );
+            conventions.StaticContentsConventions.Add(
+                StaticContentConventionBuilder.AddDirectory("resource", @"resource")
+            );
         }
 
         // 只在启动时触发1次
