@@ -18,7 +18,7 @@ namespace Bilin3d.Modules {
     public class HomeModule : BaseModule {
         public HomeModule(IDbConnection db, ILog log) {
 
-            Get["/"] = parameters => {             
+            Get["/"] = parameters => {
                 base.Page.Title = "首页";
                 //log.Error("首页");
                 return View["Index", base.Model];
@@ -72,14 +72,14 @@ namespace Bilin3d.Modules {
                     str = str + $@"[{i.Lng},{i.Lat},'{i.Fname}'],";
                 });
                 str = str.TrimEnd(',') + "];";
-                return Response.AsText(str);               
+                return Response.AsText(str);
             };
 
             Get["/crm/auth"] = _ => {
                 base.Page.Title = "比邻3d订单查询";
                 string wxOpenid = "";
                 string wxAccount = "";
-                string xbconstr = System.Configuration.ConfigurationManager.ConnectionStrings["sql"].ToString();
+                string constr = System.Configuration.ConfigurationManager.ConnectionStrings["sql"].ToString();
                 string sql = $@"
                     SELECT t1.[OrderID]
                         ,t1.[OrderCode]
@@ -107,10 +107,16 @@ namespace Bilin3d.Modules {
                     join  Gy_Customer t2 on t2.CusCode=t1.CusCode
                     where t2.WxOpenid='{wxOpenid}'";
 
-                sql = $"SELECT count(1) FROM Gy_Customer where t2.WxOpenid='{wxOpenid}'";
-                using (SqlDataReader dr = Lib.SqlServerHelper.ExecuteReader(xbconstr, CommandType.Text, sql)) {
+                sql = $"SELECT count(1) FROM Gy_Customer where WxOpenid='{wxOpenid}'";
+                string result = Lib.SqlServerHelper.ExecuteScalar(constr, CommandType.Text, sql).ToString();
+                if (result == "0") {
+                    return Response.AsJson(new { message = "账户还没关联，请先关联!" }, HttpStatusCode.BadRequest);
+                }
+
+                string rr = "";
+                using (SqlDataReader dr = Lib.SqlServerHelper.ExecuteReader(constr, CommandType.Text, sql)) {
                     if (dr.Read()) {
-                        dat = dr[0].ToString();
+                        rr = dr[0].ToString();
                     }
                 }
 

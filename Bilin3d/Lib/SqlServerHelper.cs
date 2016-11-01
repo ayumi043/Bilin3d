@@ -13,7 +13,7 @@ namespace Bilin3d.Lib {
     public class SqlServerHelper {
 
         //Database connection strings
-        public static string connString = ConfigurationManager.ConnectionStrings["xb"].ConnectionString;
+        public static string connString = ConfigurationManager.ConnectionStrings["sql"].ConnectionString;
 
         // Hashtable to store cached parameters
         private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
