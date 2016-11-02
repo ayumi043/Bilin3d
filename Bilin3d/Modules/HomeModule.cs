@@ -75,7 +75,17 @@ namespace Bilin3d.Modules {
                 return Response.AsText(str);
             };
 
-            Get["/crm/auth"] = _ => {
+            Get["/crm/order"] = _ => {
+                base.Page.Title = "比邻3d订单查询";
+                return View["Crm/order", base.Model];
+            };
+
+            Get["/crm/success"] = _ => {
+                base.Page.Title = "比邻3d订单查询";
+                return View["Crm/success", base.Model];
+            };
+
+            Get["/crm/succ1"] = _ => {
                 base.Page.Title = "比邻3d订单查询";
                 string wxOpenid = "";
                 string wxAccount = "";
@@ -122,6 +132,7 @@ namespace Bilin3d.Modules {
 
                 return View["Crm/order", base.Model];
             };
+
         }
     }
 }

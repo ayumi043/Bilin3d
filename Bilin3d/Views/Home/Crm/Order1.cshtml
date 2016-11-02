@@ -26,7 +26,7 @@
 
         <header>
             <x-header :left-options="{showBack: false}">
-                比邻3d订单查询<a slot="right" v-on:click="onShowSearch"><icon type="search"></icon> 搜索</a>
+                门店日销售报表<a slot="right" v-on:click="onShowSearch"><icon type="search"></icon> 搜索</a>
             </x-header>
             <tab :line-width=1>
                 <tab-item selected v-on:click="showTab(0)">表格</tab-item>
@@ -38,10 +38,6 @@
         <div class="vux-scroller-header-box" v-show="vs===0">
 
             <div class="box2">
-
-
-                <h3><a href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3fbb21695ebe083b&secret=69117e38b7fdb3d8950397bef7993e15&redirect_uri=http://www.being3d.net/crm/success&response_type=code&scope=snsapi_base&state=123#wechat_redirect'>验证</a></h3>
-                
 
                 <div>
                     <button class="btn btn-default" v-on:click="onShowSetting">

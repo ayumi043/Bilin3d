@@ -1700,7 +1700,9 @@
     <Content Include="Views\Admin\Printer\Index.cshtml" />
     <Content Include="Views\Hub\Print.cshtml" />
     <Content Include="Views\Hub\Order.cshtml" />
-    <Content Include="Views\Home\Crm\order.cshtml" />
+    <Content Include="Views\Home\Crm\Order1.cshtml" />
+    <Content Include="Views\Home\Crm\Order.cshtml" />
+    <Content Include="Views\Home\Crm\Success.cshtml" />
     <None Include="Views\Print\index.cshtml" />
     <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />
