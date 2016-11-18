@@ -945,6 +945,7 @@
     <Content Include="assets\plugins\sky-forms-pro\skyforms\css\sky-forms.css" />
     <Content Include="assets\plugins\smoothScroll.js" />
     <Content Include="Content\nancy-logo.png" />
+    <Content Include="MP_verify_TDETj8nUoOHLCnHe.txt" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\images\转换为STL格式.jpg" />
     <Content Include="public\reboot.txt" />
@@ -1703,6 +1704,7 @@
     <Content Include="Views\Home\Crm\Order1.cshtml" />
     <Content Include="Views\Home\Crm\Order.cshtml" />
     <Content Include="Views\Home\Crm\Success.cshtml" />
+    <Content Include="Views\Hub\Edit.cshtml" />
     <None Include="Views\Print\index.cshtml" />
     <Content Include="Views\Car\CheckCar.cshtml" />
     <Content Include="Views\Home\Faq.cshtml" />

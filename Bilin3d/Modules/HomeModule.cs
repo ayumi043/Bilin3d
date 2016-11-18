@@ -16,7 +16,7 @@ using System.Data.SqlClient;
 
 namespace Bilin3d.Modules {
     public class HomeModule : BaseModule {
-        public HomeModule(IDbConnection db, ILog log) {
+        public HomeModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
 
             Get["/"] = parameters => {
                 base.Page.Title = "首页";
@@ -133,6 +133,13 @@ namespace Bilin3d.Modules {
                 return View["Crm/order", base.Model];
             };
 
+            Get["/MP_verify_TDETj8nUoOHLCnHe.txt"] = parameters => {
+                return Response.AsText(System.IO.File.ReadAllText(pathProvider.GetRootPath() + "MP_verify_TDETj8nUoOHLCnHe.txt"));
+            };
+
+            Get["/crm/success/MP_verify_TDETj8nUoOHLCnHe.txt"] = parameters => {
+                return Response.AsText(System.IO.File.ReadAllText(pathProvider.GetRootPath() + "MP_verify_TDETj8nUoOHLCnHe.txt"));
+            };
         }
     }
 }

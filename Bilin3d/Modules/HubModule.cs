@@ -49,8 +49,9 @@ namespace Bilin3d.Modules {
 
                 var supplierModel = new SupplierModel();
                 supplierModel.Ftype = "0";
-                base.Model.SupplierModel = supplierModel;
-                base.Model.Expresses = expresses;
+                Model.SupplierModel = supplierModel;
+                Model.Expresses = expresses;
+                Model.countNoAudit = CountNoAudit(db);
                 return View["Add", Model];
             };
 
@@ -267,7 +268,31 @@ namespace Bilin3d.Modules {
             };
 
             Get["/edit"] = parameters => {
-                return "123";
+                var supplier = db.Single<SupplierModel>($@"
+                    select Tel,
+                        QQ,
+                        Address,
+                        Logo,
+                        IdCard,
+                        Fname,
+                        IdCardPic1,
+                        IdCardPic2,
+                        CompanyName,
+                        Capital,
+                        Fcode,
+                        BlicensePic,
+                        Ftype,
+                        Lng,
+                        Lat,
+                        ExpressId 
+                    from t_supplier where supplierId=(select SupplierId from t_user where id=@id limit 1)",
+                    new { id = Page.UserId });
+                var expresses = db.Select<ExpressModel>("select ExpressId,Fname from t_express");
+                Model.Expresses = expresses;
+                Model.countNoAudit = CountNoAudit(db);
+                Model.SupplierModel = supplier;
+
+                return View["Edit", Model];
             };
 
             Post["/edit"] = parameters => {
